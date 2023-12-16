@@ -92,5 +92,4 @@ class User extends Authenticatable
     {
         return $this->hasMany(Report::class, 'reported_by_id');
     }
-
 }
