@@ -7,16 +7,21 @@ use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
-    /**
-     * Seed the application's database.
-     */
-    public function run(): void
+    public function run()
     {
-        // \App\Models\User::factory(10)->create();
+        // Seed the Roles first
+        $this->call(RoleSeeder::class);
 
-        // \App\Models\User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
+        // Seed the Users next
+        $this->call(UserSeeder::class);
+
+        // The rest of the seeders can follow
+        $this->call(PostSeeder::class);
+        $this->call(CommentSeeder::class);
+        $this->call(FriendRequestSeeder::class);
+        $this->call(MessageSeeder::class);
+        $this->call(ReportSeeder::class);
+        $this->call(AnalyticSeeder::class);
     }
 }
+
