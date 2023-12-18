@@ -17,6 +17,7 @@ class CreateUsersTable extends Migration
             $table->string('profile_image_url')->nullable();
             $table->text('bio')->nullable();
             $table->enum('privacy_setting', ['Public', 'Private'])->default('Public');
+            $table->date('birth_date');
             $table->rememberToken();
             $table->timestamps();
         });

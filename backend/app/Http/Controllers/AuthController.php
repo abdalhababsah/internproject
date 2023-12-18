@@ -14,6 +14,7 @@ class AuthController extends Controller
     public function sign_up(Request $request){
         $data = $request->validate([
             'name' => 'required|string',
+            'birthDate'=>'required',
             'username' => 'required|string|unique:users',
             'email' => 'required|string|unique:users,email',
             'password' => 'required|string',
@@ -24,6 +25,7 @@ class AuthController extends Controller
             'username' => $data['username'],
             'email' => $data['email'],
             'password_hash' => bcrypt($data['password']),
+            'birth_date'=> $data['birthDate'],
         ]);
         $token = $user->createToken('apiToken')->plainTextToken;
 

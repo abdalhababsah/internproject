@@ -23,6 +23,7 @@ class User extends Authenticatable
         'bio',
         'privacy_setting',
         'role_id',
+        'birth_date',
     ];
 
 
