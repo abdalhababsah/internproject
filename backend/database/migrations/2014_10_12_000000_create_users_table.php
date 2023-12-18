@@ -14,6 +14,7 @@ class CreateUsersTable extends Migration
             $table->string('email')->unique();
             $table->string('password_hash');
             $table->string('profile_image_url')->nullable();
+            $table->string('cover_image_url')->nullable();
             $table->text('bio')->nullable();
             $table->enum('privacy_setting', ['Public', 'Private'])->default('Public');
             $table->date('birth_date');
