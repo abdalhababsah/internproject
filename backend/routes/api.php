@@ -9,6 +9,7 @@ use App\Http\Controllers\FriendRequestController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\AnalyticController;
+use App\Http\Controllers\UserController;
 
 
 /*
@@ -31,6 +32,9 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::resource('comments', CommentController::class);
 ////////////////////////////////////////////////////////////////////////////////////////
 
+
+
+Route::resource('users', UserController::class);
 Route::post('/signup', [AuthController::class, 'sign_up']);
 Route::post('login', [AuthController::class,'login']);
 Route::post('/logout', [AuthController::class, 'logout']);

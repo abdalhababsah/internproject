@@ -11,7 +11,6 @@ class CreateUsersTable extends Migration
             $table->id('user_id');
             $table->unsignedBigInteger('role_id')->constrained('roles')->onDelete('cascade');
             $table->string('name');
-            $table->string('username')->unique();
             $table->string('email')->unique();
             $table->string('password_hash');
             $table->string('profile_image_url')->nullable();
