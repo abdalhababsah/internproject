@@ -13,16 +13,19 @@ class FriendRequestController extends Controller
      */
     public function index(Request $request, $userId)
     {
-
-        $friends = DB::table('friend_requests')
-            ->where(function ($query) use ($userId) {
-                $query->where('sender_id', $userId)
-                    ->orWhere('receiver_id', $userId);
-            })
-            ->where('status', 'Accepted')
-            ->get();
-
-        return response()->json(['friends' => $friends]);
+        $friend_requests = Friend_Request::where(function ($query) use ($userId) {
+            $query->where('sender_id', $userId)
+                ->orWhere('receiver_id', $userId);
+        })
+        ->where('status', 'Accepted')
+        ->with(['sender', 'receiver'])
+        ->get();
+    
+    $friends = $friend_requests->map(function ($request) use ($userId) {
+        return $request->sender_id == $userId ? $request->receiver : $request->sender;
+    })->select('users.user_id','users.name','users.profile_image_url as img');
+    
+    return response()->json(['friends' => $friends]);
     }
 
 
