@@ -1,6 +1,6 @@
 import React from 'react';
-import img from "../images/feed-2.jpg"
-import img1 from "../images/social logo.png"
+import img from "../images/feed-2.jpg";
+import img1 from "../images/social logo.png";
 
 
 const Header = () => {

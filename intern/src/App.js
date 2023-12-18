@@ -9,6 +9,7 @@ import Profile from './components/Profile';
 import './App.css';
 import Login from './components/Login';
 import PlayerTable from './components/Dashboard/PlayerTable';
+import Register from './components/Register';
 
 
 const App = () => {
@@ -18,7 +19,8 @@ const App = () => {
     <Route path='/' element={<Feed/>}/>
       <Route path='/profile' element={<Profile/>}/>
       <Route path='/login' element={<Login/>}/>
-      <Route path='/Dashboard' element={<PlayerTable/>}/>
+      <Route path='/dashboard' element={<PlayerTable/>}/>
+      <Route path='/register' element={<Register/>}/>
     </Routes>
     </BrowserRouter>
     
