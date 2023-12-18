@@ -28,7 +28,7 @@ class PostController extends Controller
     public function index()
     {
         try {
-            $posts = Post::with('user:user_id,username')->get();
+            $posts = Post::with('user:user_id,name')->get();
 
             return response()->json([
                 'posts' => $posts
