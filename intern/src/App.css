@@ -1,38 +1,577 @@
-.App {
-  text-align: center;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+/* styles.css */
+body {
+  font-family: 'Arial', sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f0f2f5;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.feed {
+  padding: 20px;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.feed__postForm {
+  background-color: #fff;
+  padding: 15px;
+  margin-bottom: 20px;
+  border-radius: 5px;
   display: flex;
   flex-direction: column;
+}
+
+.feed__postForm textarea {
+  margin-bottom: 10px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.feed__postForm button {
+  padding: 10px;
+  background-color: #1877f2;
+  color: #fff;
+  width: 20%;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.feed__post {
+  background-color: #fff;
+  padding: 15px;
+  margin-bottom: 20px;
+  border-radius: 5px;
+}
+
+.feed__actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.feed__actions button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
   align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
+}
+.feed__user-info {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.feed__user-info img {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.feed__user-info p {
+  font-weight: bold;
+}
+
+.feed__comment {
+  border-top: 1px solid #ccc;
+  padding-top: 10px;
+  margin-top: 10px;
+}
+
+.feed__comment p {
+  margin-bottom: 0;
+}
+
+.feed__postForm button,
+.feed__actions button,
+.feed__comments button {
+  padding: 10px;
+  background-color: #1877f2;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-right: 10px;
+}
+
+.feed__postForm input,
+.feed__comments input {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-right: 10px;
+}
+
+.feed__postForm button,
+.feed__comments button {
+  background-color: #1877f2;
+  color: #fff;
+}
+
+.feed__postForm button:hover,
+.feed__actions button:hover,
+.feed__comments button:hover {
+  background-color: #1558b6;
+}
+
+.feed__postForm input:focus,
+.feed__comments input:focus {
+  outline: none;
+  border-color: #1877f2;
+}
+.feed__postForm {
+  background-color: #fff;
+  padding: 15px;
+  margin-bottom: 20px;
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+}
+
+.feed__postForm textarea {
+  margin-bottom: 10px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 14px;
+  resize: vertical;
+}
+
+.feed__postForm button {
+  padding: 10px;
+  background-color: #1877f2;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s ease-in-out;
+}
+
+.feed__postForm button:hover {
+  background-color: #1558b6;
+}
+
+.feed__comments input {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 14px;
+  margin-right: 10px;
+}
+
+.feed__comments button {
+  padding: 10px;
+  background-color: #1877f2;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s ease-in-out;
+}
+
+.feed__comments button:hover {
+  background-color: #1558b6;
+}
+.comment-form {
+  display: flex;
+  margin-top: 10px;
+  max-width: 400px; /* Adjust the maximum width as needed */
+  width: 100%;
+}
+
+.comment-form input {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px 0 0 5px;
+}
+
+.comment-form button {
+  padding: 10px;
+  background-color: #1877f2;
+  color: #fff;
+  border: none;
+  border-radius: 0 5px 5px 0;
+  cursor: pointer;
+  transition: background-color 0.3s ease-in-out;
+}
+
+.comment-form button:hover {
+  background-color: #1558b6;
+}
+
+/* Add Font Awesome CSS (you may need to install it if not already done) */
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css');
+
+
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.app__body {
+  display: flex;
+  flex: 1;
+}
+
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background-color: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  border-bottom: 1px solid #ccc;
+}
+
+.header__logo {
+  height: 40px;
+}
+
+.header__search input {
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.header__user {
+  display: flex;
+  align-items: center;
+}
+
+.header__user img {
+  height: 30px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+/* Sidebar.css */
+.sidebar {
+  position: sticky;
+  height: 100vh;
+  overflow-y: auto;
+  top: 0;
+  margin-top: 10px;
+  width: 250px;
+  background-color: #fff;
+  padding: 15px;
+  border-right: 1px solid #ccc;
+}
+.sidebar a{
+  text-decoration: none;
+  color: #000;
+}
+.sidebar__item {
+  
+  margin-bottom: 10px;
+  cursor: pointer;
+  padding: 10px;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.sidebar__item:hover {
+  background-color: #f0f2f5;
+}
+
+.feed {
+  flex: 1;
+  padding: 20px;
+}
+
+.friend-requests {
+  position: sticky;
+  height: 100vh;
+  margin-top: 10px;
+  overflow-y: auto;
+  top: 0;
+  width: 250px;
+  background-color: #fff;
+  padding: 15px;
+}
+
+.friend-requests h3 {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+/* FriendRequests.css */
+.friend-requests {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.friend-requests h3 {
+  margin-bottom: 20px;
+}
+
+.friend-request-item {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #ccc;
+  padding: 10px 0;
+}
+
+.friend-request-user {
+  display: flex;
+  align-items: center;
+}
+
+.friend-request-user img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.friend-request-actions button {
+  padding: 8px;
+  margin-left: 10px;
+  background-color: #1877f2; /* Green for accept button */
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.friend-request-actions button.reject {
+  background-color: #f44336; /* Red for reject button */
+}
+.profile {
+  padding: 20px;
+  flex: 1 1;
+}
+
+.profile__wallpaper {
+  width: 100%;
+  max-height: 200px;
+  object-fit: cover;
+  border-radius: 5px;
+}
+
+.profile__image {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  margin-top: -50px;
+  border: 3px solid #fff;
+}
+
+.profile__heading {
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+}
+
+.profile__textarea {
+  width: 92%;
+  padding: 10px;
+  margin-bottom: 10px;
+  resize: none;
+}
+
+.profile__button {
+  padding: 8px 16px;
+  background-color: #1877f2;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.profile__post {
+  margin-top: 20px;
+  border: 1px solid #ddd;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.profile__post-content {
+  margin-bottom: 10px;
+}
+
+.profile__user-info {
+  display: flex;
+  align-items: center;
+}
+
+.profile__user-image {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.profile__username {
+  font-size: 18px; /* Adjust the font size as needed */
+  font-weight: bold;
+}
+
+.profile__comments {
+  margin-top: 10px;
+}
+
+.profile__comment {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.profile__comment-text {
+  margin-left: 10px;
+}
+
+.profile__comment-form {
+  display: flex;
+  margin-top: 10px;
+}
+
+.profile__comment-input {
+  flex: 1;
+  padding: 8px;
+  margin-right: 10px;
+}
+
+.profile__comment-button {
+  padding: 8px 16px;
+  background-color: #1877f2;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.profile__actions {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.profile__like-button,
+.profile__edit-button,
+.profile__delete-button,
+.profile__comment-button {
+  padding: 8px 16px;
+  margin-right: 8px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.profile__like-button {
+  background-color: #1877f2;
+  color: #fff;
+}
+
+.profile__edit-button {
+  background-color: #1877f2;
+  color: #fff;
+}
+
+.profile__delete-button {
+  background-color: #e74c3c;
+  color: #fff;
+}
+
+.profile__comment-button {
+  background-color: #1877f2;
+  color: #fff;
+}
+.profile__post-button {
+  background-color: #1877f2; /* Green color */
   color: white;
+  padding: 5px 15px;
+  border: none;
+  margin-left: 4px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
 }
 
-.App-link {
-  color: #61dafb;
+.profile__post-button:hover {
+  background-color: #1877f2; /* Darker green color on hover */
+}
+/* Register.css */
+.auth-container {
+  background-color: #1877f2;
+  color: #fff;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  width: 300px;
+  margin: auto;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.auth-container h2 {
+  margin-bottom: 20px;
+}
+
+.auth-container form {
+  display: flex;
+  flex-direction: column;
+}
+
+.auth-container input {
+  padding: 10px;
+  margin-bottom: 10px;
+  border: none;
+  border-radius: 3px;
+  font-size: 14px;
+}
+
+.auth-container button {
+  padding: 10px;
+  background-color: #fff;
+  color: #1877f2;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.auth-container p {
+  margin-top: 10px;
+  color: #fff;
+}
+
+.auth-container a {
+  color: #fff;
+  font-weight: bold;
+}
+
+.error-message {
+  color: #e74c3c;
+  margin-top: 10px;
+}
+
+.profile__like-button::before {
+  content: '\1F44D'; 
+  margin-right: 5px;
+}
+
+.profile__comment-button::before {
+  content: '\1F4AC'; 
+  margin-right: 5px;
+}
+
+.profile__edit-button::before {
+  content: '\1F441'; 
+  margin-right: 5px;
+}
+
+.profile__delete-button::before {
+  content: '\1F5D1'; 
+  margin-right: 5px;
 }
