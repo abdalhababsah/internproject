@@ -36,24 +36,23 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-        $credentials = $request->validate([
-            'email' => 'required|email',
-            'password' => 'required'
-        ]);
-
-        if (Auth::attempt($credentials)) {
-        $user = Auth::user();
-        $token = $user->createToken('sanctum-token')->plainTextToken;;
-
-        $res = [
-            'user' => $user,
-            'token' => $token
-        ];
-        return response()->json($res, 201);
+        $email = $request->input('email');
+        $password = $request->input('password');
+        
+        $user = User::where('email', $email)->first();
+        
+        if ($user && Hash::check($password, $user->password_hash)) {
+            $token = $user->createToken('sanctum-token')->plainTextToken;
+        
+            $res = [
+                'user' => $user,
+                'token' => $token
+            ];
+            return response()->json($res, 201);
         } else {
             return response()->json("Your provided credentials do not match in our records.");
-           
         }
+        
 
     }
 
