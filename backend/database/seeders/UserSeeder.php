@@ -25,7 +25,6 @@ class UserSeeder extends Seeder
             [
                 'role_id' => $roles['User'],
                 'name' => 'John User',
-                'username' => 'johnuser',
                 'email' => 'johnuser@example.com',
                 'password_hash' => Hash::make('password'),
                 'created_at' => now(),
@@ -35,7 +34,6 @@ class UserSeeder extends Seeder
             [
                 'role_id' => $roles['Content Creator'],
                 'name' => 'Alice Creator',
-                'username' => 'alicecreator',
                 'email' => 'alicecreator@example.com',
                 'password_hash' => Hash::make('password'),
                 'created_at' => now(),
@@ -45,7 +43,6 @@ class UserSeeder extends Seeder
             [
                 'role_id' => $roles['Community Moderator'],
                 'name' => 'Charlie Moderator',
-                'username' => 'charliemoderator',
                 'email' => 'charliemoderator@example.com',
                 'password_hash' => Hash::make('password'),
                 'created_at' => now(),
@@ -55,7 +52,6 @@ class UserSeeder extends Seeder
             [
                 'role_id' => $roles['Administrator'],
                 'name' => 'Diana Admin',
-                'username' => 'dianaadmin',
                 'email' => 'dianaadmin@example.com',
                 'password_hash' => Hash::make('password'),
                 'created_at' => now(),
