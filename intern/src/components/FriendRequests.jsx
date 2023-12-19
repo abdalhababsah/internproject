@@ -1,14 +1,21 @@
-import React from 'react';
-import img from "../images/feed-5.jpg";
-import img1 from "../images/feed-7.jpg";
+import { useState, useEffect } from 'react';
 
-const FriendRequests = () => {
-  // Dummy data for friend requests (replace with actual data)
-  const friendRequests = [
-    { id: 1, name: 'mohannad', picture: {img} },
-    { id: 2, name: 'Allawi', picture: {img1} },
-    // Add more friend request items as needed
-  ];
+function FriendRequests() {
+  const [friendRequests, setFriendRequests] = useState([]);
+
+  useEffect(() => {
+    let userId = sessionStorage.getItem('userId');
+   
+    fetch(`http://127.0.0.1:8000/api/pending-requests/${userId}`)
+      .then(response => response.json())
+      .then(data => {
+        setFriendRequests(data.pendingRequests.map(request => ({
+          id: request.user_id,
+          name: request.sender_name,
+          picture: {img: request.sender_image},
+        })));
+      });
+  }, []);
 
   const handleAccept = (id) => {
     // Handle accept action
@@ -26,7 +33,7 @@ const FriendRequests = () => {
       {friendRequests.map((request) => (
         <div key={request.id} className="friend-request-item">
           <div className="friend-request-user">
-            <img src={img} alt={request.name} />
+            <img src={request.picture.img} alt={request.name} />
             <p>{request.name}</p>
           </div>
           <div className="friend-request-actions">
@@ -37,6 +44,6 @@ const FriendRequests = () => {
       ))}
     </div>
   );
-};
+}
 
 export default FriendRequests;
