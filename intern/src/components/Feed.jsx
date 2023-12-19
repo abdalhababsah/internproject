@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 import img from "../images/feed-2.jpg";
 import Header from './Header';
 import Sidebar from './Sidebar';
@@ -20,25 +21,31 @@ const Feed = () => {
     };
 
     const handleMediaChange = (event) => {
-        // Handle file selection for images or videos
         const file = event.target.files[0];
         setMediaFile(file);
     };
 
-    const handlePostSubmit = (event) => {
+    const handlePostSubmit = async (event) => {
         event.preventDefault();
 
         if (postType === 'text' && postText.trim() === '') {
-            return; // Don't allow empty text posts
+            return;
         }
 
-        // In a real application, you would get user information from authentication
+        const userId = sessionStorage.getItem('userId');
+
+        if (!userId) {
+            console.error('User ID not found in sessionStorage');
+            return;
+        }
+
         const currentUser = { name: 'ibahim', picture: 'user_picture_url' };
 
         let newPost;
         if (postType === 'text') {
             newPost = {
                 id: posts.length + 1,
+                user_id: userId,
                 content: postText,
                 type: 'text',
                 likes: 0,
@@ -46,11 +53,11 @@ const Feed = () => {
                 user: currentUser,
             };
         } else if (postType === 'image' || postType === 'video') {
-            // In a real application, you would upload the media file to a server and get its URL
             const mediaUrl = URL.createObjectURL(mediaFile);
 
             newPost = {
                 id: posts.length + 1,
+                user_id: userId,
                 content: mediaUrl,
                 type: postType,
                 likes: 0,
@@ -59,29 +66,38 @@ const Feed = () => {
             };
         }
 
-        // Add the new post to the posts array with user information
-        setPosts([...posts, newPost]);
+        try {
+            const response = await axios.post('http://localhost:8000/api/posts', {
+                user_id: userId,
+                content: newPost.content,
+                media_url: newPost.type === 'text' ? null : newPost.content,
+            }, {
+                headers: {
+                    'X-CSRF-TOKEN': document.head.querySelector('meta[name="csrf-token"]').content,
+                },
+            });
 
-        // Clear the post input and reset media file
-        setPostText('');
-        setPostType('text');
-        setMediaFile(null);
-        // Add a new state for tracking comments visibility
-        setShowComments([...showComments, false]);
+            if (response.status === 201) {
+                setPosts([...posts, newPost]);
+
+                setPostText('');
+                setPostType('text');
+                setMediaFile(null);
+                setShowComments([...showComments, false]);
+            }
+        } catch (error) {
+            console.error('Error posting to the API:', error);
+        }
     };
 
     const handleLike = (index) => {
-        // Increment the likes for the selected post
         const updatedPosts = [...posts];
         updatedPosts[index].likes += 1;
         setPosts(updatedPosts);
     };
 
     const handleComment = (index, commentText) => {
-        // In a real application, you would get user information from authentication
         const currentUser = { name: 'ibrahim', picture: 'user_picture_url' };
-
-        // Add a new comment to the selected post with user information
         const updatedPosts = [...posts];
         updatedPosts[index].comments.push({ text: commentText, user: currentUser });
         setPosts(updatedPosts);
@@ -94,10 +110,8 @@ const Feed = () => {
     };
 
     const handleDeletePost = (index) => {
-        // In a real application, you might want to confirm the delete action
         const updatedPosts = posts.filter((_, i) => i !== index);
         setPosts(updatedPosts);
-        // Update the comments visibility array
         const updatedShowComments = showComments.filter((_, i) => i !== index);
         setShowComments(updatedShowComments);
     };
@@ -199,7 +213,6 @@ const Feed = () => {
                                     </div>
                                 )}
 
-                                {/* Add a form for submitting comments */}
                                 <form
                                     className="comment-form"
                                     onSubmit={(e) => {

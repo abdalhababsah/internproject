@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 const PlayerForm = ({ player, setShowModal, addPlayer, updatePlayer }) => {
-  // Initialize form state with empty fields or with player data if editing
   const [formData, setFormData] = useState({
     name: player?.name || '',
     email: player?.email || '',
@@ -9,40 +9,46 @@ const PlayerForm = ({ player, setShowModal, addPlayer, updatePlayer }) => {
     image: player?.image || ''
   });
 
-  // Update form data when the editable player changes
   useEffect(() => {
     if (player) {
       setFormData({
         name: player.name,
         email: player.email,
-        password: '', // For security, we don't handle passwords in edit
+        password: '',
         image: player.image
       });
     }
   }, [player]);
 
-  // Handle form field changes
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  // Handle image change separately if you're uploading an image
   const handleImageChange = (event) => {
     const file = event.target.files[0];
     const imageUrl = URL.createObjectURL(file);
     setFormData({ ...formData, image: imageUrl });
   };
 
-  // Handle form submission
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    if (player) {
-      updatePlayer(player.id, formData);
-    } else {
-      addPlayer(formData);
+
+    try {
+      if (player) {
+        // If player exists, it's an update (PUT) request
+        await axios.put(`http://127.0.0.1:8000/api/users/${player.id}`, formData);
+        updatePlayer(player.id, formData);
+      } else {
+        // If player doesn't exist, it's an add (POST) request
+        const response = await axios.post('http://127.0.0.1:8000/api/users', formData);
+        addPlayer(response.data);
+      }
+
+      setShowModal(false);
+    } catch (error) {
+      console.error('Error:', error);
     }
-    setShowModal(false); // Close the modal on submission
   };
 
   return (
@@ -112,7 +118,7 @@ const PlayerForm = ({ player, setShowModal, addPlayer, updatePlayer }) => {
             type="submit"
             className="w-full text-white bg-blue-500 hover:bg-blue-600 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
           >
-            {player ? 'Update Player' : 'Create Player'}
+            {player ? 'Update' : 'Create'}
           </button>
         </form>
       </div>

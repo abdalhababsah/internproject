@@ -52,8 +52,13 @@ const Login = () => {
         // Clear any previous error
         setError('');
 
-        // Redirect to the home page after successful login
-        navigate('/');
+        // Redirect based on the user's role
+        if (user.role_id === 1) {
+          navigate('/');
+        } else if (user.role_id === 4) {
+          navigate('/dashboard');
+        }
+
       } catch (error) {
         // Handle login error
         setError('Invalid email or password');

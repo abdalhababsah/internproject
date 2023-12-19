@@ -376,7 +376,7 @@ body {
 }
 
 .profile__textarea {
-  width: 92%;
+  width: 100%;
   padding: 10px;
   margin-bottom: 10px;
   resize: none;
@@ -446,7 +446,7 @@ body {
 
 .profile__comment-button {
   padding: 8px 16px;
-  background-color: #1877f2;
+  background-color:  #1877f2 !important ;
   color: #fff;
   border: none;
   border-radius: 5px;
@@ -490,7 +490,7 @@ body {
   color: #fff;
 }
 .profile__post-button {
-  background-color: #1877f2; /* Green color */
+  background-color: #1877f2!important; /* Green color */
   color: white;
   padding: 5px 15px;
   border: none;
