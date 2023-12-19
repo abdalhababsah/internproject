@@ -64,6 +64,7 @@ Route::delete('/posts/{post}', [PostController::class, 'destroy'])->name('posts.
 
 // // // // // // // // // //
 Route::get('/friends/{userId}', [FriendRequestController::class, 'index']);
+Route::put('/friends/{id}',[FriendRequestController::class,'update']);
 Route::get('/pending-requests/{userId}', [FriendRequestController::class, 'selectPendding']);
 Route::post('/send-friend-request', [FriendRequestController::class, 'sendingFriendRequest']);
 // // // // // // // // // //

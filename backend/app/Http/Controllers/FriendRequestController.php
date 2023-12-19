@@ -46,7 +46,7 @@ class FriendRequestController extends Controller
         //     ->get();
         $pendingRequests = Friend_Request::where('receiver_id', $userId)
         ->join('users', 'friend_requests.sender_id', '=', 'users.user_id')
-        ->select('users.user_id', 'users.name as sender_name', 'users.profile_image_url as sender_image','friend_requests.created_at','friend_requests.status')
+        ->select('users.user_id', 'users.name as sender_name', 'users.profile_image_url as sender_image','friend_requests.friend_request_id','friend_requests.status')
         ->where('friend_requests.status', 'Pending')
         ->get();
 
@@ -98,9 +98,21 @@ return response()->json(['pendingRequests' => $pendingRequests]);
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Friend_Request $friend_Request)
+    public function update(Request $request, $id)
     {
-        //
+        $friend_Request = Friend_Request::find($id);
+        try {
+            $request->validate([
+                'status' => 'required|in:Pending,Accepted,Rejected'
+            ]);
+            
+            $friend_Request->update(['status' => $request->status]);
+
+            return response()->json($friend_Request);
+
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
 
     /**
