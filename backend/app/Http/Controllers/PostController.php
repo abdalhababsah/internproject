@@ -33,14 +33,6 @@ class PostController extends Controller
         $posts = Post::with('user:user_id,name,profile_image_url')
              ->whereIn('posts.user_id', $friendsId1->merge($friendsId2)->prepend($id))
              ->get();
-                            //    ->where(function ($subQuery) use ($id, $friendsIds) {
-                            //        $subQuery->where('privacy_setting', 'Public')
-                            //                 ->orWhere(function ($innerQuery) use ($id, $friendsIds) {
-                            //                     $innerQuery->whereIn('user_id',$id )
-                            //                                -
-                            //                 });
-                            //    });
-                             // return response()->json([$friendsId1, $friendsId2]);
 
         // try {
         //     $posts = Post::with('user:user_id,name,profile_image_url')->get();
