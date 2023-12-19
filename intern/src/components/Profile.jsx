@@ -176,6 +176,17 @@ const Profile = () => {
   };
 
   const handleEdit = (postId, content) => {
+
+    fetch(`http://127.0.0.1:8000/api/posts/${postId}`, {
+      method: 'PUT',
+    })
+      .then(response => response.json())
+      .then(data => {
+        console.log(postId);
+        // window.location.reload();
+      });
+  
+
     setPostText(content);
     setPostType('text'); // Assuming you want to edit as text
     handleDelete(postId);
@@ -284,11 +295,7 @@ const Profile = () => {
         Your browser does not support the video tag.
       </video>
     )}
-  </div>
-))}
-
-
-            {/* <div className="profile__actions flex items-center space-x-2 mt-2">
+    <div className="profile__actions flex items-center space-x-2 mt-2">
               <button className="bg-[#19715c] hover:bg-[#478298] text-[#d3efe9] px-2 py-1 rounded transition duration-300" onClick={() => handleLike(post.id)}>
                 Like
               </button>
@@ -300,6 +307,11 @@ const Profile = () => {
                 Delete
               </button>
             </div>
+  </div>
+))}
+
+
+            {/* 
 
             <div className="profile__user-info">
               <img src={post.user.picture} alt={post.user.name} className="profile__user-image" />
