@@ -1,40 +1,76 @@
-import React, { useState } from 'react';
-import PlayerForm from './PlayerForm'; // Make sure this import path is correct
-import "./style.css"
-// C:\Users\Orange\Desktop\social\friends\src\App.css
-const initialPlayers = [
-  // This is just sample data, replace with your own
-  { id: 1, name: 'Juan Mata', email: 'juan@example.com', password: 'password1', image: 'path_to_image' },
-  { id: 2, name: 'Paul Pogba', email: 'paul@example.com', password: 'password2', image: 'path_to_image' },
-  // ... more players
-];
+import React, { useState, useEffect } from 'react';
+import axios from 'axios'; // Import Axios
+import PlayerForm from './PlayerForm';
+import './style.css';
 
-function PlayerTable() {
-  const [players, setPlayers] = useState(initialPlayers);
+const PlayerTable = () => {
+  const [players, setPlayers] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [editablePlayer, setEditablePlayer] = useState(null);
 
-  // Create a new player
+  // Fetch user data from the API
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await fetch('http://127.0.0.1:8000/api/users');
+        const userData = await response.json();
+
+        // Transform fetched data to match the structure of initialPlayers
+        const transformedData = userData.map((user) => ({
+          id: user.user_id,
+          name: user.name,
+          email: user.email,
+          password: user.password_hash,
+          image: user.profile_image_url || 'default_image_path', // Replace 'default_image_path' with your default image path
+        }));
+
+        setPlayers(transformedData);
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      }
+    };
+
+    fetchUsers();
+  }, []); // The empty dependency array ensures the effect runs only once, similar to componentDidMount
+
   const addPlayer = (player) => {
     setPlayers([...players, { ...player, id: players.length + 1 }]);
     setShowModal(false);
   };
 
-  // Update an existing player
   const updatePlayer = (id, updatedPlayer) => {
     setPlayers(players.map((player) => (player.id === id ? updatedPlayer : player)));
     setShowModal(false);
   };
 
-  // Delete a player
-  const deletePlayer = (id) => {
-    setPlayers(players.filter((player) => player.id !== id));
+  const deletePlayer = async (id) => {
+    try {
+      const csrfToken = document.head.querySelector('meta[name="csrf-token"]').content;
+      // Send DELETE request to the API
+      await axios.delete(`http://127.0.0.1:8000/api/users/${id}`, {
+        headers: {
+          'X-CSRF-TOKEN': csrfToken,
+        },
+      });
+
+      // Update state to remove the deleted player
+      setPlayers(players.filter((player) => player.id !== id));
+    } catch (error) {
+      console.error('Error deleting user:', error);
+    }
   };
 
-  // Set player to be edited
   const editPlayer = (player) => {
     setShowModal(true);
     setEditablePlayer(player);
+  };
+
+  const logout = () => {
+    // Clear session storage
+    sessionStorage.clear();
+    // Redirect to the login page
+    // You need to replace '/login' with the actual path to your login page
+    window.location.href = '/login';
   };
 
   return (
@@ -42,21 +78,42 @@ function PlayerTable() {
       <div className="overflow-x-auto relative shadow-md sm:rounded-lg m-5">
         <div className="flex justify-between items-center bg-gray-100 py-4 px-6">
           <h2 className="text-2xl text-gray-800 font-bold">Users</h2>
-          <button
-            className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 focus:outline-none"
-            onClick={() => { setShowModal(true); setEditablePlayer(null); }}
-          >
-            Create New
-          </button>
+          <div className="flex space-x-2">
+            <button
+              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 focus:outline-none"
+              onClick={() => {
+                setShowModal(true);
+                setEditablePlayer(null);
+              }}
+            >
+              Create New
+            </button>
+            <button
+              className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 focus:outline-none"
+              onClick={logout}
+            >
+              Logout
+            </button>
+          </div>
         </div>
         <table className="w-full text-sm text-left text-gray-500">
           <thead className="text-xs text-gray-700 uppercase bg-gray-50">
             <tr>
-              <th scope="col" className="py-3 px-6">Name</th>
-              <th scope="col" className="py-3 px-6">Email</th>
-              <th scope="col" className="py-3 px-6">Password</th>
-              <th scope="col" className="py-3 px-6">Image</th>
-              <th scope="col" className="py-3 px-6">Actions</th>
+              <th scope="col" className="py-3 px-6">
+                Name
+              </th>
+              <th scope="col" className="py-3 px-6">
+                Email
+              </th>
+              <th scope="col" className="py-3 px-6">
+                Password
+              </th>
+              <th scope="col" className="py-3 px-6">
+                Image
+              </th>
+              <th scope="col" className="py-3 px-6">
+                Actions
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -98,6 +155,6 @@ function PlayerTable() {
       )}
     </>
   );
-}
+};
 
 export default PlayerTable;

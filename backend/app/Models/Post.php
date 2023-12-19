@@ -37,4 +37,5 @@ class Post extends Model
     {
         return $this->hasOne(Analytic::class, 'post_id');
     }
+  
 }

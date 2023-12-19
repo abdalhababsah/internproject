@@ -29,12 +29,12 @@ class ReportController extends Controller
     {
         try {
             $validatedData = $request->validate([
-                'post_id' => 'required|exists:posts,id',
+                'post_id' => 'required|exists:posts,post_id',
                 'reason' => 'required|string',
             ]);
 
             $report = Report::create([
-                'reported_by_id' => auth()->id(),
+                'reported_by_id' => $request->user_id,
                 'post_id' => $validatedData['post_id'],
                 'reason' => $validatedData['reason'],
                 'status' => 'Pending' // Default status
