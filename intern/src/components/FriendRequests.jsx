@@ -47,7 +47,6 @@ function FriendRequests() {
         <div key={request.id} className="friend-request-item">
           <div className="friend-request-user">
             <img src={request.picture.img} alt={request.name} />
-            {/* console.log({request.picture.img}); */}
             <p>{request.name}</p>
           </div>
           <div className="friend-request-actions">
