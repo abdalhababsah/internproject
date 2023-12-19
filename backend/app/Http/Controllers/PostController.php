@@ -24,36 +24,24 @@ class PostController extends Controller
     // }
     public function index(Request $request)
     {
-        // try {
-        $id = $request->id; // Get user ID from request, or default to current user
-        $user=User::find($id);
-        // $currentUser = Auth::user();
-        $friendsIds = $user->friends->pluck('user_id'); // Assuming you have a friends method
-        // return response()->json($friendsIds);
-        $posts = Post::with('user:user_id,name,profile_image_url')
-                     ->where('posts.user_id', $id) 
-                         ->orWhere('posts.user_id',$friendsIds) ->get();
-                            //    ->where(function ($subQuery) use ($id, $friendsIds) {
-                            //        $subQuery->where('privacy_setting', 'Public')
-                            //                 ->orWhere(function ($innerQuery) use ($id, $friendsIds) {
-                            //                     $innerQuery->whereIn('user_id',$id )
-                            //                                -
-                            //                 });
-                            //    });
+
+       
                      
-                    
+        try {
+            $posts = Post::with('user:user_id,name,profile_image_url')->get();
+
 
         return response()->json([
             'posts' => $posts
         ], 200);
 
-    // } catch (\Exception $e) {
-    //     return response()->json([
-    //         'message' => 'Something went wrong!',
-    //         'error' => $e->getMessage()
-    //     ], 500);
+    // // } catch (\Exception $e) {
+    // //     return response()->json([
+    // //         'message' => 'Something went wrong!',
+    // //         'error' => $e->getMessage()
+    // //     ], 500);
+    // // }
     // }
-    }
 
     /**
      * Show the form for creating a new resource.
