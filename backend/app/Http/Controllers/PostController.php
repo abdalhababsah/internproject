@@ -22,6 +22,7 @@ class PostController extends Controller
         $friendsId2 = $user->friend2->pluck('user_id'); // Assuming you have a friends method
         $posts = Post::with('user:user_id,name,profile_image_url')
              ->whereIn('posts.user_id', $friendsId1->merge($friendsId2)->prepend($id))
+             ->orderBy('created_at','desc')
              ->get();
 
         // }else {
