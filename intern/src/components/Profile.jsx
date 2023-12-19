@@ -4,7 +4,7 @@ import img from '../images/feed-2.jpg';
 import Sidebar from './Sidebar';
 import Header from './Header';
 import FriendRequests from './FriendRequests';
-
+import EditProfileModal from './EditProfileModal';
 const Profile = () => {
   const [postText, setPostText] = useState('');
   const [postType, setPostType] = useState('text');
@@ -14,6 +14,11 @@ const Profile = () => {
 
   const handlePostChange = (event) => {
     setPostText(event.target.value);
+  };
+  const [showEditModal, setShowEditModal] = useState(false);
+
+  const toggleEditModal = () => {
+    setShowEditModal(!showEditModal);
   };
 
   const handlePostTypeChange = (event) => {
@@ -98,20 +103,21 @@ const Profile = () => {
 
   return (
     <>
-    <div className="app">
-    <Header/>
-    <div className="app__body">
-    <Sidebar/>
-    <div className="profile">
-      <img src={img} alt="Profile Wallpaper" className="profile__wallpaper" />
-      <div className="profile__user-info">
-        <img src={img} alt="Profile" className="profile__image" />
-        <p className="profile__username">ibrahim</p>
-      </div>
-
-      <div className="profile__posts">
-        <h3 className="profile__heading">My Posts</h3>
-        <div className="profile__postForm">
+      <div className="app bg-[#fff] text-[#171717]">
+        <Header />
+        <div className="app__body flex">
+          <Sidebar />
+          <div className="profile flex-1 p-4">
+            <img src={img} alt="Profile Wallpaper" className="w-full h-40 object-cover mb-4 rounded-lg" />
+            <div className="flex items-center justify-between bg-[#2A3935] p-4 rounded-lg mb-4">
+              <img src={img} alt="Profile" className="rounded-full w-20 h-20 object-cover mr-4" />
+              <p className="flex-1">ibrahim</p>
+              <button className="bg-[#19715c] hover:bg-[#478298] text-[#d3efe9] px-4 py-2 rounded transition duration-300" onClick={toggleEditModal}>Edit Profile</button>
+            </div>
+            {showEditModal && <EditProfileModal onClose={toggleEditModal} />}
+      <div className="profile__posts mt-4">
+      <h3 className="text-xl font-semibold mb-3 text-[#d3efe9]">My Posts</h3>
+  <div className="profile__postForm bg-[#2A3935] p-4 rounded-lg mb-4">
           <form onSubmit={handlePostSubmit}>
             <textarea
               className="profile__textarea"
@@ -145,25 +151,27 @@ const Profile = () => {
         </div>
 
         {posts.map((post) => (
-          <div key={post.id} className="profile__post">
-            {post.type === 'text' && <p className="profile__post-content">{post.content}</p>}
-            {post.type === 'image' && <img src={post.content} alt="Post" />}
-            {post.type === 'video' && (
-              <video width="100%" height="auto" controls>
-                <source src={post.content} type="video/mp4" />
-                Your browser does not support the video tag.
-              </video>
-            )}
+    <div key={post.id} className="profile__post bg-[#2A3935] p-4 rounded-lg mb-4">
+      {/* Post Content */}
+      {post.type === 'text' && <p className="profile__post-content text-[#d3efe9]">{post.content}</p>}
+      {post.type === 'image' && <img src={post.content} alt="Post" className="w-full h-auto my-2 rounded-lg" />}
+      {post.type === 'video' && (
+        <video className="w-full h-auto my-2 rounded-lg" controls>
+          <source src={post.content} type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+      )}
 
-            <div className="profile__actions">
-              <button className="profile__like-button" onClick={() => handleLike(post.id)}>
+
+            <div className="profile__actions flex items-center space-x-2 mt-2">
+              <button className="bg-[#19715c] hover:bg-[#478298] text-[#d3efe9] px-2 py-1 rounded transition duration-300" onClick={() => handleLike(post.id)}>
                 Like
               </button>
-              <span className="profile__like-count">{post.likes} Likes</span>
-              <button className="profile__edit-button" onClick={() => handleEdit(post.id, post.content)}>
+              <span className="text-[#d3efe9]">{post.likes} Likes</span>
+              <button className="bg-[#19715c] hover:bg-[#478298] text-[#d3efe9] px-2 py-1 rounded transition duration-300" onClick={() => handleEdit(post.id, post.content)}>
                 Edit
               </button>
-              <button className="profile__delete-button" onClick={() => handleDelete(post.id)}>
+              <button className="bg-[#19715c] hover:bg-[#478298] text-[#d3efe9] px-2 py-1 rounded transition duration-300" onClick={() => handleDelete(post.id)}>
                 Delete
               </button>
             </div>
