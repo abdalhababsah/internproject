@@ -4,40 +4,55 @@ namespace App\Http\Controllers;
 
 use App\Models\Post;
 use App\Models\Analytic;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use File;
 class PostController extends Controller
 {
 
-
-
+    // public function friends()
     // {
-    //     "post_id": 1,
-    //     "user_id": 1,
-    //     "content": "Sample post content",
-    //     "media_url": "https://example.com/media/sample.jpg",
-    //     "created_at": "2023-12-16T02:25:12.000000Z",
-    //     "updated_at": "2023-12-16T02:25:12.000000Z",
-    //     "username": "johnuser"
+    //     // Assuming the FriendRequest model has 'sender_id' and 'receiver_id' and a 'status' field
+    //     $friends = $this->belongsToMany(User::class, 'friend_requests', 'sender_id', 'receiver_id')
+    //                     ->wherePivot('status', 'Accepted') // Only accepted requests
+    //                     ->withTimestamps()
+    //                     ->union($this->belongsToMany(User::class, 'friend_requests', 'receiver_id', 'sender_id')
+    //                                ->wherePivot('status', 'Accepted'));
 
+    //     return $friends;
     // }
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function index(Request $request)
     {
-        try {
-            $posts = Post::with('user:user_id,username')->get();
+        // try {
+        $id = $request->id; // Get user ID from request, or default to current user
+        $user=User::find($id);
+        // $currentUser = Auth::user();
+        $friendsIds = $user->friends->pluck('user_id'); // Assuming you have a friends method
+        // return response()->json($friendsIds);
+        $posts = Post::with('user:user_id,name,profile_image_url')
+                     ->where('posts.user_id', $id) 
+                         ->orWhere('posts.user_id',$friendsIds) ->get();
+                            //    ->where(function ($subQuery) use ($id, $friendsIds) {
+                            //        $subQuery->where('privacy_setting', 'Public')
+                            //                 ->orWhere(function ($innerQuery) use ($id, $friendsIds) {
+                            //                     $innerQuery->whereIn('user_id',$id )
+                            //                                -
+                            //                 });
+                            //    });
+                     
+                    
 
-            return response()->json([
-                'posts' => $posts
-            ], 200);
-        } catch (\Exception $e) {
-            return response()->json([
-                'message' => 'Something went wrong!'
-            ], 500);
-        }
+        return response()->json([
+            'posts' => $posts
+        ], 200);
+
+    // } catch (\Exception $e) {
+    //     return response()->json([
+    //         'message' => 'Something went wrong!',
+    //         'error' => $e->getMessage()
+    //     ], 500);
+    // }
     }
 
     /**
