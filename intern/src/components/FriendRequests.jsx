@@ -12,7 +12,7 @@ function FriendRequests() {
         setFriendRequests(data.pendingRequests.map(request => ({
           id: request.user_id,
           name: request.sender_name,
-          picture: {img: request.sender_image},
+          picture: {img: request.sender_image!=null ? 'http://127.0.0.1:8000/user/'+request.sender_image : 'https://cobaltsettlements.com/wp-content/uploads/2019/03/blank-profile.jpg'},
           reqId: request.friend_request_id
         })));
       });
@@ -47,6 +47,7 @@ function FriendRequests() {
         <div key={request.id} className="friend-request-item">
           <div className="friend-request-user">
             <img src={request.picture.img} alt={request.name} />
+            {/* console.log({request.picture.img}); */}
             <p>{request.name}</p>
           </div>
           <div className="friend-request-actions">
