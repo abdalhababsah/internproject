@@ -38,14 +38,19 @@ class FriendRequestController extends Controller
      */
     public function selectPendding(Request $request, $userId)
     {
-        $pendingRequests = DB::table('friend_requests')
-            ->join('users', 'friend_requests.sender_id', '=', 'users.user_id')
-            ->select('friend_requests.*', 'users.name as sender_name', 'users.profile_image_url as sender_image')
-            ->where('friend_requests.receiver_id', $userId)
-            ->where('friend_requests.status', 'Pending')
-            ->get();
+        // $pendingRequests = DB::table('friend_requests')
+        //     ->join('users', 'friend_requests.sender_id', '=', 'users.user_id')
+        //     ->select('friend_requests.*', 'users.name as sender_name', 'users.profile_image_url as sender_image')
+        //     ->where('friend_requests.receiver_id', $userId)
+        //     ->where('friend_requests.status', 'Pending')
+        //     ->get();
+        $pendingRequests = Friend_Request::where('receiver_id', $userId)
+        ->join('users', 'friend_requests.sender_id', '=', 'users.user_id')
+        ->select('users.user_id', 'users.name as sender_name', 'users.profile_image_url as sender_image','friend_requests.created_at','friend_requests.status')
+        ->where('friend_requests.status', 'Pending')
+        ->get();
 
-        return response()->json(['pendingRequests' => $pendingRequests]);
+return response()->json(['pendingRequests' => $pendingRequests]);
     }
 
     public function sendingFriendRequest(Request $request)

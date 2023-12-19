@@ -11,21 +11,11 @@ use File;
 class PostController extends Controller
 {
 
-    // public function friends()
-    // {
-    //     // Assuming the FriendRequest model has 'sender_id' and 'receiver_id' and a 'status' field
-    //     $friends = $this->belongsToMany(User::class, 'friend_requests', 'sender_id', 'receiver_id')
-    //                     ->wherePivot('status', 'Accepted') // Only accepted requests
-    //                     ->withTimestamps()
-    //                     ->union($this->belongsToMany(User::class, 'friend_requests', 'receiver_id', 'sender_id')
-    //                                ->wherePivot('status', 'Accepted'));
-
-    //     return $friends;
-    // }
     public function index(Request $request)
     {
 
         try {
+        // if ($request->has("id")) {
         $id = $request->id; // Get user ID from request, or default to current user
         $user=User::find($id);
         $friendsId1 = $user->friends->pluck('user_id'); // Assuming you have a friends method
@@ -34,8 +24,8 @@ class PostController extends Controller
              ->whereIn('posts.user_id', $friendsId1->merge($friendsId2)->prepend($id))
              ->get();
 
-        // try {
-        //     $posts = Post::with('user:user_id,name,profile_image_url')->get();
+        // }else {
+        //     $posts = Post::with('user:user_id,name,profile_image_url')->get();}
 
 
         return response()->json([
