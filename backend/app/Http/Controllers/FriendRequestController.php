@@ -18,12 +18,16 @@ class FriendRequestController extends Controller
                 ->orWhere('receiver_id', $userId);
         })
         ->where('status', 'Accepted')
-        ->with(['sender', 'receiver'])
+        ->with(['sender' => function ($query) {
+            $query->select('user_id', 'name', 'profile_image_url as img');
+        }, 'receiver' => function ($query) {
+            $query->select('user_id', 'name', 'profile_image_url as img');
+        }])
         ->get();
-    
+    // return response()->json($friend_requests);
     $friends = $friend_requests->map(function ($request) use ($userId) {
         return $request->sender_id == $userId ? $request->receiver : $request->sender;
-    })->select('users.user_id','users.name','users.profile_image_url as img');
+    });
     
     return response()->json(['friends' => $friends]);
     }
