@@ -12,7 +12,7 @@ function FriendRequests() {
         setFriendRequests(data.pendingRequests.map(request => ({
           id: request.user_id,
           name: request.sender_name,
-          picture: {img: request.sender_image!=null ? 'http://127.0.0.1:8000/user/'+request.sender_image : 'https://cobaltsettlements.com/wp-content/uploads/2019/03/blank-profile.jpg'},
+          picture: {img: request.sender_image!=null ? 'http://127.0.0.1:8000/user/'+request.sender_image : 'https://pbs.twimg.com/profile_images/446867705560190977/esTJZMLH.png'},
           reqId: request.friend_request_id
         })));
       });
