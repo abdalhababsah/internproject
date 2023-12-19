@@ -97,11 +97,12 @@ class User extends Authenticatable
     public function friends()
     {
         // Assuming the FriendRequest model has 'sender_id' and 'receiver_id' and a 'status' field
-        return $this->belongsToMany(User::class, 'friend_requests', 'sender_id', 'receiver_id')
-                        ->wherePivot('status', 'Accepted') // Only accepted requests
-                        ->union($this->belongsToMany(User::class, 'friend_requests', 'receiver_id', 'sender_id')
-                                   ->wherePivot('status', 'Accepted'));
-
-        //  $friends;
+        return $this->belongsToMany(User::class, 'friend_requests', 'sender_id', 'receiver_id')->wherePivot('status', 'Accepted');
+                        
     }
+    public function friend2(){
+        return $this->belongsToMany(User::class, 'friend_requests', 'receiver_id', 'sender_id')
+                                   ->wherePivot('status', 'Accepted');
+    }
+
 }

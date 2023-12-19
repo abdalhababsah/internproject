@@ -28,12 +28,11 @@ class PostController extends Controller
         try {
         $id = $request->id; // Get user ID from request, or default to current user
         $user=User::find($id);
-        // $currentUser = Auth::user();
-        $friendsIds = $user->friends->pluck('user_id'); // Assuming you have a friends method
-        return response()->json($friendsIds);
-        // $posts = Post::with('user:user_id,name,profile_image_url')
-        //              ->where('posts.user_id', $id) 
-                        //  ->orWhere('posts.user_id',$friendsIds) ->get();
+        $friendsId1 = $user->friends->pluck('user_id'); // Assuming you have a friends method
+        $friendsId2 = $user->friend2->pluck('user_id'); // Assuming you have a friends method
+        $posts = Post::with('user:user_id,name,profile_image_url')
+             ->whereIn('posts.user_id', $friendsId1->merge($friendsId2)->prepend($id))
+             ->get();
                             //    ->where(function ($subQuery) use ($id, $friendsIds) {
                             //        $subQuery->where('privacy_setting', 'Public')
                             //                 ->orWhere(function ($innerQuery) use ($id, $friendsIds) {
@@ -41,7 +40,8 @@ class PostController extends Controller
                             //                                -
                             //                 });
                             //    });
-                     
+                             // return response()->json([$friendsId1, $friendsId2]);
+
         // try {
         //     $posts = Post::with('user:user_id,name,profile_image_url')->get();
 
