@@ -27,20 +27,20 @@ const Feed = () => {
 
     const handlePostSubmit = async (event) => {
         event.preventDefault();
-
+    
         if (postType === 'text' && postText.trim() === '') {
             return;
         }
-
+    
         const userId = sessionStorage.getItem('userId');
-
+    
         if (!userId) {
             console.error('User ID not found in sessionStorage');
             return;
         }
-
+    
         const currentUser = { name: 'ibahim', picture: 'user_picture_url' };
-
+    
         let newPost;
         if (postType === 'text') {
             newPost = {
@@ -54,34 +54,37 @@ const Feed = () => {
             };
         } else if (postType === 'image' || postType === 'video') {
             const mediaUrl = URL.createObjectURL(mediaFile);
-
+    
             newPost = {
                 id: posts.length + 1,
                 user_id: userId,
-                content: mediaUrl,
+                content: postText,
+                media_url: mediaUrl,
                 type: postType,
                 likes: 0,
                 comments: [],
                 user: currentUser,
             };
         }
-
+    
         try {
             const formData = new FormData();
             formData.append('user_id', userId);
             formData.append('content', newPost.content);
-            formData.append('media_url', newPost.type === 'text' ? null : mediaFile);
-
+            if (newPost.type !== 'text') {
+                formData.append('media_url', mediaFile);
+            }
+    
             const response = await axios.post('http://localhost:8000/api/posts', formData, {
                 headers: {
                     'X-CSRF-TOKEN': document.head.querySelector('meta[name="csrf-token"]').content,
                     'Content-Type': 'multipart/form-data',
                 },
             });
-
+    
             if (response.status === 201) {
                 setPosts([...posts, newPost]);
-
+    
                 setPostText('');
                 setPostType('text');
                 setMediaFile(null);
@@ -91,7 +94,7 @@ const Feed = () => {
             console.error('Error posting to the API:', error);
         }
     };
-
+    
     const handleLike = (index) => {
         const updatedPosts = [...posts];
         updatedPosts[index].likes += 1;
@@ -136,7 +139,41 @@ const Feed = () => {
                 console.error('Error fetching posts:', error);
             }
         };
-    
+            // ... (existing code)
+        
+            const handleDeletePost = async (postId, index) => {
+                try {
+                    const userId = sessionStorage.getItem('userId');
+            
+                    if (!userId) {
+                        console.error('User ID not found in sessionStorage');
+                        return;
+                    }
+            
+                    // Make an API request to delete the post
+                    const response = await axios.delete(`http://localhost:8000/api/posts/${postId}`, {
+                        headers: {
+                            'X-CSRF-TOKEN': document.head.querySelector('meta[name="csrf-token"]').content,
+                        },
+                    });
+            
+                    if (response.status === 200) {
+                        // Update state to remove the deleted post
+                        const updatedPosts = [...posts];
+                        updatedPosts.splice(index, 1); // Remove the post at the specified index
+                        setPosts(updatedPosts);
+            
+                        const updatedShowComments = [...showComments];
+                        updatedShowComments.splice(index, 1); // Remove the corresponding showComments entry
+                        setShowComments(updatedShowComments);
+                    } else {
+                        console.error('Error deleting post');
+                    }
+                } catch (error) {
+                    console.error('Error deleting post:', error);
+                }
+            };
+            
         fetchPosts();
     }, []); // Empty dependency array ensures that the effect runs only once on component mount
 
@@ -193,12 +230,18 @@ const Feed = () => {
                                         
                     {posts.map((post, index) => (
   <div key={index} className="feed__post">
+    <div className="feed__user-info">
+                                <img src={img} alt={post.user.name} />
+                                <p>{post.user.name}</p>
+                            </div>
       <div>
         <p>{post.content}</p>
       </div>
-      <div>
-      <img src={`http://localhost:8000/posts/${post.media_url}`} alt="Post" />
-      </div>
+      {post.type !== 'text' && post.media_url && (
+    <div>
+        <img src={`http://localhost:8000/posts/${post.media_url}`} alt="Post" />
+    </div>
+)}
     {post.type === 'video' && (
       <video width="100%" height="auto" controls>
         <source src={`${post.media_url}`} type="video/mp4" />
@@ -206,22 +249,18 @@ const Feed = () => {
       </video>
     )}
                 
-                                         <div className="feed__user-info">
-                                <img src={img} alt={post.user.name} />
-                                <p>{post.user.name}</p>
-                            </div>
+                           
+                
+                <div className="feed__actions">
+    <button onClick={() => handleLike(index)}>
+        <i className="fas fa-thumbs-up"></i> {post.likes} Likes
+    </button>
 
-                            <div className="feed__actions">
-                                <button onClick={() => handleLike(index)}>
-                                    <i className="fas fa-thumbs-up"></i> {post.likes} Likes
-                                </button>
-                                {/* <button onClick={() => toggleComments(index)}>
-                                    <i className="fas fa-comment"></i> {post.comments.length} Comments
-                                </button> */}
-                                <button onClick={() => handleDeletePost(index)}>
-                                    <i className="fas fa-trash"></i> Delete
-                                </button>
-                            </div>
+    <button onClick={() => handleDeletePost(post.id, index)}>
+    <i className="fas fa-trash"></i> Delete
+</button>
+
+</div>
 
                             {showComments[index] && (
                                 <div className="feed__comments">
