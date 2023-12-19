@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import img from "../images/feed-2.jpg";
 import Header from './Header';
@@ -9,7 +9,7 @@ const Feed = () => {
     const [postText, setPostText] = useState('');
     const [postType, setPostType] = useState('text');
     const [posts, setPosts] = useState([]);
-    const [showComments, setShowComments] = useState(Array(posts.length).fill(false));
+    const [showComments, setShowComments] = useState([]);
     const [mediaFile, setMediaFile] = useState(null);
 
     const handlePostChange = (event) => {
@@ -67,13 +67,15 @@ const Feed = () => {
         }
 
         try {
-            const response = await axios.post('http://localhost:8000/api/posts', {
-                user_id: userId,
-                content: newPost.content,
-                media_url: newPost.type === 'text' ? null : newPost.content,
-            }, {
+            const formData = new FormData();
+            formData.append('user_id', userId);
+            formData.append('content', newPost.content);
+            formData.append('media_url', newPost.type === 'text' ? null : mediaFile);
+
+            const response = await axios.post('http://localhost:8000/api/posts', formData, {
                 headers: {
                     'X-CSRF-TOKEN': document.head.querySelector('meta[name="csrf-token"]').content,
+                    'Content-Type': 'multipart/form-data',
                 },
             });
 
@@ -116,127 +118,150 @@ const Feed = () => {
         setShowComments(updatedShowComments);
     };
 
-    return (
-        <>
-            <div className="app">
-                <Header />
-                <div className="app__body">
-                    <Sidebar />
-                    <div className="feed">
+    useEffect(() => {
+        const fetchPosts = async () => {
+            try {
+                const response = await axios.get('http://localhost:8000/api/posts?id=5');
+                
+                // Check if response.data.posts is defined and has a length property
+                if (response.data.posts && response.data.posts.length) {
+                    setPosts(response.data.posts);
+    
+                    // Initialize showComments with an array of the same length as posts, filled with false
+                    setShowComments(Array(response.data.posts.length).fill(false));
+                } else {
+                    console.error('Posts not found in API response');
+                }
+            } catch (error) {
+                console.error('Error fetching posts:', error);
+            }
+        };
+    
+        fetchPosts();
+    }, []); // Empty dependency array ensures that the effect runs only once on component mount
 
-                        <div className="feed__postForm">
-                            <textarea
-                                placeholder="What's on your mind?"
-                                value={postText}
-                                onChange={handlePostChange}
-                            ></textarea>
-                            <div className="feed__postOptions">
-                                <label>
-                                    <input
-                                        type="radio"
-                                        name="postType"
-                                        value="text"
-                                        checked={postType === 'text'}
-                                        onChange={() => handlePostTypeChange('text')}
-                                    />
-                                    Text
-                                </label>
-                                <label>
-                                    <input
-                                        type="radio"
-                                        name="postType"
-                                        value="image"
-                                        checked={postType === 'image'}
-                                        onChange={() => handlePostTypeChange('image')}
-                                    />
-                                    Image
-                                </label>
-                                <label>
-                                    <input
-                                        type="radio"
-                                        name="postType"
-                                        value="video"
-                                        checked={postType === 'video'}
-                                        onChange={() => handlePostTypeChange('video')}
-                                    />
-                                    Video
-                                </label>
-                            </div>
-                            {postType !== 'text' && (
-                                <input type="file" accept="image/*, video/*" onChange={handleMediaChange} />
-                            )}
-                            <button onClick={handlePostSubmit}>Post</button>
+   return (
+    <>
+        <div className="app">
+            <Header />
+            <div className="app__body">
+                <Sidebar />
+                <div className="feed">
+                    <div className="feed__postForm">
+                        <textarea
+                            placeholder="What's on your mind?"
+                            value={postText}
+                            onChange={handlePostChange}
+                        ></textarea>
+                        <div className="feed__postOptions">
+                            <label>
+                                <input
+                                    type="radio"
+                                    name="postType"
+                                    value="text"
+                                    checked={postType === 'text'}
+                                    onChange={() => handlePostTypeChange('text')}
+                                />
+                                Text
+                            </label>
+                            <label>
+                                <input
+                                    type="radio"
+                                    name="postType"
+                                    value="image"
+                                    checked={postType === 'image'}
+                                    onChange={() => handlePostTypeChange('image')}
+                                />
+                                Image
+                            </label>
+                            <label>
+                                <input
+                                    type="radio"
+                                    name="postType"
+                                    value="video"
+                                    checked={postType === 'video'}
+                                    onChange={() => handlePostTypeChange('video')}
+                                />
+                                Video
+                            </label>
                         </div>
-
-                        {posts.map((post, index) => (
-                            <div key={index} className="feed__post">
-                                {post.type === 'text' && <p>{post.content}</p>}
-                                {post.type === 'image' && <img src={post.content} alt="Post" />}
-                                {post.type === 'video' && (
-                                    <video width="100%" height="auto" controls>
-                                        <source src={post.content} type="video/mp4" />
-                                        Your browser does not support the video tag.
-                                    </video>
-                                )}
-
-                                <div className="feed__user-info">
-                                    <img src={img} alt={post.user.name} />
-                                    <p>{post.user.name}</p>
-                                </div>
-
-                                <div className="feed__actions">
-                                    <button onClick={() => handleLike(index)}>
-                                        <i className="fas fa-thumbs-up"></i> {post.likes} Likes
-                                    </button>
-                                    <button onClick={() => toggleComments(index)}>
-                                        <i className="fas fa-comment"></i> {post.comments.length} Comments
-                                    </button>
-                                    <button onClick={() => handleDeletePost(index)}>
-                                        <i className="fas fa-trash"></i> Delete
-                                    </button>
-                                </div>
-
-                                {showComments[index] && (
-                                    <div className="feed__comments">
-                                        {post.comments.map((comment, commentIndex) => (
-                                            <div key={commentIndex} className="feed__comment">
-                                                <div className="feed__user-info">
-                                                    <img
-                                                        src={img}
-                                                        alt={comment.user.name}
-                                                    />
-                                                    <p>{comment.user.name}</p>
-                                                </div>
-                                                <p>{comment.text}</p>
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
-
-                                <form
-                                    className="comment-form"
-                                    onSubmit={(e) => {
-                                        e.preventDefault();
-                                        const commentText = e.target.elements.commentText.value;
-                                        handleComment(index, commentText);
-                                        e.target.reset();
-                                    }}
-                                >
-                                    <input
-                                        type="text"
-                                        name="commentText"
-                                        placeholder="Add a comment"
-                                    />
-                                    <button type="submit">Comment</button>
-                                </form>
-                            </div>
-                        ))}
+                        {postType !== 'text' && (
+                            <input type="file" accept={postType === 'image' ? 'image/*' : 'video/*'} onChange={handleMediaChange} />
+                        )}
+                        <button onClick={handlePostSubmit}>Post</button>
                     </div>
-                    <FriendRequests />
+                                        
+                    {posts.map((post, index) => (
+  <div key={index} className="feed__post">
+      <div>
+        <p>{post.content}</p>
+      </div>
+      <div>
+      <img src={`http://localhost:8000/posts/${post.media_url}`} alt="Post" />
+      </div>
+    {post.type === 'video' && (
+      <video width="100%" height="auto" controls>
+        <source src={`${post.media_url}`} type="video/mp4" />
+        Your browser does not support the video tag.
+      </video>
+    )}
+                
+                                         <div className="feed__user-info">
+                                <img src={img} alt={post.user.name} />
+                                <p>{post.user.name}</p>
+                            </div>
+
+                            <div className="feed__actions">
+                                <button onClick={() => handleLike(index)}>
+                                    <i className="fas fa-thumbs-up"></i> {post.likes} Likes
+                                </button>
+                                {/* <button onClick={() => toggleComments(index)}>
+                                    <i className="fas fa-comment"></i> {post.comments.length} Comments
+                                </button> */}
+                                <button onClick={() => handleDeletePost(index)}>
+                                    <i className="fas fa-trash"></i> Delete
+                                </button>
+                            </div>
+
+                            {showComments[index] && (
+                                <div className="feed__comments">
+                                    {post.comments.map((comment, commentIndex) => (
+                                        <div key={commentIndex} className="feed__comment">
+                                            <div className="feed__user-info">
+                                                <img src={img} alt={comment.user.name} />
+                                                <p>{comment.user.name}</p>
+                                            </div>
+                                            <p>{comment.text}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+
+                            <form
+                                className="comment-form"
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    const commentText = e.target.elements.commentText.value;
+                                    handleComment(index, commentText);
+                                    e.target.reset();
+                                }}
+                            >
+                                <input
+                                    type="text"
+                                    name="commentText"
+                                    placeholder="Add a comment"
+                                />
+                                <button type="submit">Comment</button>
+                            </form>
+                        </div>
+                    ))}
                 </div>
+                <FriendRequests />
             </div>
-        </>
-    );
+        </div>
+    </>
+);
+
 };
 
 export default Feed;
