@@ -12,6 +12,7 @@ const Profile = () => {
   const [imageFile, setImageFile] = useState(null);
   const [videoFile, setVideoFile] = useState(null);
   const [posts, setPosts] = useState([]);
+  const [likes, setlikes] = useState('');
 
   const [user, setuserInfo] = useState([]);
   const [mediaFile, setMediaFile] = useState(null);
@@ -105,7 +106,7 @@ const Profile = () => {
       content: postText,
       media_url: mediaFile,
       type: postType,
-      likes: 0,
+      // likes: 0,
       comments: [],
   };
 
@@ -161,20 +162,64 @@ const Profile = () => {
       // setPostType('text');
     // }
   };
-
   const handleLike = (postId) => {
-    const updatedPosts = posts.map((post) => {
-      if (post.id === postId) {
-        return {
-          ...post,
-          likes: post.likes + 1,
-        };
-      }
-      return post;
-    });
+    console.log(postId);
+    console.log(userId);
+    axios
+      .post(
+        `http://127.0.0.1:8000/api/likes/`,
+        {
+          user_id: userId,
+          post_id: postId,
+        },
+        {
+          headers: {
+            "X-CSRF-TOKEN": document.head.querySelector(
+              'meta[name="csrf-token"]'
+            ).content,
+          },
+        }
+      )
+      .then((response) => {
+        console.log(response.data); // Axios automatically parses the response data as JSON
+        // window.location.reload();
+      })
+      .catch((error) => {
+        console.error(error); // Axios handles errors better than fetch
+      });
 
-    setPosts(updatedPosts);
+      axios
+      .get(`http://127.0.0.1:8000/api/likes/${postId}`, {
+        headers: {
+          // 'Content-Type': 'multipart/form-data', // You don't need this header for JSON data
+          "X-CSRF-TOKEN": document.head.querySelector(
+            'meta[name="csrf-token"]'
+          ).content,
+        },
+      })
+      .then((response) => {
+        // Assign the number to the post.likes property
+        setlikes(response.data);
+        console.log(likes); // Log the number of likes
+      })
+      .catch((error) => {
+        console.error(error); // Handle any errors
+      });
+      
   };
+    
+  //   const updatedPosts = posts.map((post) => {
+  //     if (post.id === postId) {
+  //       return {
+  //         ...post,
+  //         likes: post.likes + 1,
+  //       };
+  //     }
+  //     return post;
+  //   });
+
+    // setPosts(updatedPosts);
+  // };
 
   const handleEdit = (postId, content) => {
 
@@ -315,7 +360,7 @@ const Profile = () => {
               <button className="bg-[#19715c] hover:bg-[#478298] text-[#d3efe9] px-2 py-1 rounded transition duration-300" onClick={() => handleLike(post.id)}>
                 Like
               </button>
-              <span className="text-[#d3efe9]">{post.likes} Likes</span>
+              <span className="text-[#19715c]">{likes} Likes</span>
               <button className="bg-[#19715c] hover:bg-[#478298] text-[#d3efe9] px-2 py-1 rounded transition duration-300" onClick={() => handleEdit(post.id, post.content)}>
                 Edit
               </button>
