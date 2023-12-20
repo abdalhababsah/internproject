@@ -11,8 +11,9 @@ const EditProfileModal = ({ onClose }) => {
     const file = event.target.files[0];
     setProfileImage(file);
 };
-if(!name){
-  let name=sessionStorage.getItem('userName');}
+if (!name) {
+  setName(sessionStorage.getItem('userName'));
+}
   let userId = sessionStorage.getItem('userId');
 
     const handleSave = async (event) => {
@@ -44,7 +45,7 @@ if(!name){
         console.error('Error posting to the API:', error);
       }
 
-    // onClose(); // Close modal after saving
+    onClose(); // Close modal after saving
   };
 
 
