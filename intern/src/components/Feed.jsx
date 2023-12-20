@@ -287,7 +287,7 @@ const Feed = () => {
     </button>
 
     {userId == post.user_id ? (
-        <button onClick={() => handleDeletePost(post.id, index)}>
+        <button onClick={() => handleDeletePost(post.post_id, index)}>
             <i className="fas fa-trash"></i> Delete
         </button>
     ) : (
