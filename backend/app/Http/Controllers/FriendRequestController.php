@@ -116,7 +116,7 @@ return response()->json(['pendingRequests' => $pendingRequests]);
         ->pluck('sender_id', 'receiver_id')
         ->toArray();
     
-      $users = User::where('user_id', '!=', $userId)
+        $users = User::where('user_id', '!=', $userId)
         ->whereNotIn('user_id', array_keys($friends))
         ->get(['user_id', 'name', 'profile_image_url as img']);
     
