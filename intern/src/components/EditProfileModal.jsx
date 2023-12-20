@@ -40,9 +40,9 @@ const EditProfileModal = ({ onClose }) => {
   };
 
   const handleProfileImageChange = (event) => {
-    setProfileImage(URL.createObjectURL(event.target.files[0]));
-    // const file = event.target.files[0];
-    // setMediaFile(file);
+    // (URL.createObjectURL(event.target.files[0]));setMediaFile
+    const file = event.target.files[0];
+    setProfileImage(file);
 };
 
 

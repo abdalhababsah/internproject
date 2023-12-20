@@ -10,10 +10,22 @@ class CommentController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
-        return Comment::all();
+        if ($request->has('post_id')) {
+            // Fetch comments for the specified post
+            $postId = $request->input('post_id');
+            $comments = Comment::where('post_id', $postId)->get();
+        } else {
+            // If 'post_id' is not provided, return all comments
+            $comments = Comment::all();
+        }
+        if ($comments->isEmpty()) {
+            return response()->json(['message' => 'No comments found for this post'], 404);
+        }
+
+        return response()->json( $comments);
+        // return Comment::all();
 
     }
 
