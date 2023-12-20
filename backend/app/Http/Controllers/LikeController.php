@@ -30,12 +30,10 @@ class LikeController extends Controller
     public function store(Request $request)
     {
         $like =Like::where(['user_id' => $request->user_id, 'post_id' => $request->post_id])->first();
-        //  Post::(['user_id' => $user_id, 'post_id' => $post_id]);
         if ($like) {
             $like->delete();
         } else {
             $like=Like::create(['user_id' => $request->user_id, 'post_id' => $request->post_id]);
-            // $post = Post::create(['user_id' => $user_id, 'post_id' => $post_id]);
         }
     }
 
@@ -45,7 +43,6 @@ class LikeController extends Controller
     public function show($id)
     {
         $likeSum = Like::where('post_id', $id)->count();
-        // ->select(DB::raw('AVG(reviews.rating) as average_rating'))->get();
         
         return response()->json($likeSum);
     }

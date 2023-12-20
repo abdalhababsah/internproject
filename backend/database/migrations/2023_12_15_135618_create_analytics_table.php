@@ -10,7 +10,12 @@ class CreateAnalyticsTable extends Migration
     {
         Schema::create('analytics', function (Blueprint $table) {
             $table->id('analytics_id');
-            $table->unsignedBigInteger('post_id')->constrained('posts')->onDelete('cascade');
+            $table->foreignId('post_id')
+                ->unsigned()
+                ->references('post_id')
+                ->on('posts')
+                ->onDelete('cascade');
+            // $table->unsignedBigInteger('post_id')->constrained('posts')->onDelete('cascade');
             $table->integer('views_count')->default(0);
             $table->integer('likes_count')->default(0);
             $table->integer('comments_count')->default(0);

@@ -16,8 +16,7 @@ const Sidebar = () => {
     <div className="sidebar">
       <Link to="/"><div className="sidebar__item">Home</div></Link>
       <Link to="/profile"><div className="sidebar__item">Profile</div></Link>
-      <div className="sidebar__item">Notifications</div>
-      <div className="sidebar__item">Settings</div>
+      <Link to="/addfriends"><div className="sidebar__item">Suggestion Friends</div></Link>
       <div className="sidebar__item" onClick={handleLogout}>Logout</div>
     </div>
   );

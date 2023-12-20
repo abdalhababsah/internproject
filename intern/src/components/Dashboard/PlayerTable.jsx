@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios'; // Import Axios
 import PlayerForm from './PlayerForm';
+import SidebarAdmin from '../SidebarAdmin'
 import './style.css';
 
 const PlayerTable = () => {
@@ -72,26 +73,28 @@ const PlayerTable = () => {
     // You need to replace '/login' with the actual path to your login page
     window.location.href = '/login';
   };
-
+  
   return (
     <>
+          <div className='flex '>  
+       <SidebarAdmin/>
       <div className="overflow-x-auto relative shadow-md sm:rounded-lg m-5">
         <div className="flex justify-between items-center bg-gray-100 py-4 px-6">
           <h2 className="text-2xl text-gray-800 font-bold">Users</h2>
           <div className="flex space-x-2">
             <button
-              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 focus:outline-none"
+              className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 focus:outline-none"
               onClick={() => {
                 setShowModal(true);
                 setEditablePlayer(null);
               }}
-            >
+              >
               Create New
             </button>
             <button
-              className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 focus:outline-none"
+              className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-900 focus:outline-none"
               onClick={logout}
-            >
+              >
               Logout
             </button>
           </div>
@@ -128,7 +131,7 @@ const PlayerTable = () => {
                 <td className="py-4 px-6 flex space-x-1">
                   <button
                     onClick={() => editPlayer(player)}
-                    className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
+                    className="bg-gray-500 text-white px-3 py-1 rounded hover:bg-gray-900"
                   >
                     Edit
                   </button>
@@ -152,7 +155,9 @@ const PlayerTable = () => {
           updatePlayer={updatePlayer}
           setShowModal={setShowModal}
         />
+        
       )}
+      </div>
     </>
   );
 };
