@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\LikeController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
@@ -69,6 +70,7 @@ Route::get('/pending-requests/{userId}', [FriendRequestController::class, 'selec
 Route::post('/send-friend-request', [FriendRequestController::class, 'sendingFriendRequest']);
 // // // // // // // // // //
 
+Route::resource('likes', LikeController::class);
 
 
 
