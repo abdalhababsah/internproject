@@ -10,8 +10,13 @@ use File;
 
 class UserController extends Controller
 {
-    public function index(){
-        $users = User::all();
+    public function index(Request $request){
+        $query=User::query();
+        if ($request->has('search')) {
+            $query->where('users.name', 'LIKE', '%' . $request->search . '%')
+            ->orWhere('users.email','LIKE', '%' . $request->search . '%');
+        }
+        $users = $query->get();
         return response()->json($users);
     }
 

@@ -1,5 +1,5 @@
 // Profile.jsx#19715c19715c
-import React, { useState ,useEffect } from 'react';
+import React, { useState ,useEffect ,useNavigate} from 'react';
 import axios from 'axios';
 import img from '../images/feed-2.jpg';
 import Sidebar from './Sidebar';
@@ -97,13 +97,13 @@ const Profile = () => {
   const handlePostSubmit = async (event) => {
     event.preventDefault();
 
-    const mediaUrl = URL.createObjectURL(mediaFile);
+    // const mediaUrl = URL.createObjectURL(mediaFile);
     
     let newPost = {
       id: posts.length + 1,
       user_id: userId,
       content: postText,
-      media_url: mediaUrl,
+      media_url: mediaFile,
       type: postType,
       likes: 0,
       comments: [],
@@ -124,7 +124,8 @@ const Profile = () => {
 
       },
       });
-  
+      window.location.reload();
+
       if (response.status === 201) {
           setPosts([...posts, newPost]);
   
@@ -191,11 +192,26 @@ const Profile = () => {
     setPostType('text'); // Assuming you want to edit as text
     handleDelete(postId);
   };
-
-  const handleDelete = (postId) => {
+  const handleDelete = async (postId) => {
+    try {
+        // Send a request to delete the post on the server
+        await axios.delete(`http://localhost:8000/api/posts/${postId}`);
+        
+        // Update the local state to reflect the deleted post
+        // const updatedPosts = posts.filter((_, i) => i !== index);
+        // setPosts(updatedPosts);
+        
+        // const updatedShowComments = showComments.filter((_, i) => i !== index);
+        // setShowComments(updatedShowComments);
+    } catch (error) {
+        console.error('Error deleting post:', error);
+    }
     const updatedPosts = posts.filter((post) => post.id !== postId);
     setPosts(updatedPosts);
-  };
+}; 
+
+  // const handleDelete = (postId) => {
+  // };
 
   const handleCommentSubmit = (postId, commentText) => {
     const currentUser = { name: 'ibrahim', picture: img };

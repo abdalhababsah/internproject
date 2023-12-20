@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 
 const EditProfileModal = ({ onClose }) => {
   const [name, setName] = useState('');
@@ -7,14 +8,43 @@ const EditProfileModal = ({ onClose }) => {
   const [profileImage, setProfileImage] = useState(null);
   const [backgroundImage, setBackgroundImage] = useState(null);
 
-  const handleSave = () => {
-    // Here you'd typically handle the save logic, like sending data to a server
+  let nam=sessionStorage.getItem('userName');
+  let userId = sessionStorage.getItem('userId');
+
+    const handleSave = async (event) => {
+      event.preventDefault();
+
+      try {
+        const formData = new FormData();
+        formData.append('user_id', userId);
+        formData.append('name', name);
+        formData.append('email', email);
+        formData.append('password', password);
+        if (profileImage != null) {
+            formData.append('profile_media_url', profileImage);
+        }
+    
+        const response = await axios.put('http://localhost:8000/api/users/'+userId, formData,{
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            'X-CSRF-TOKEN': document.head.querySelector('meta[name="csrf-token"]').content,
+  
+        },
+        });
+   
+      } catch (error) {
+        console.error('Error posting to the API:', error);
+      }
+
     onClose(); // Close modal after saving
   };
 
   const handleProfileImageChange = (event) => {
     setProfileImage(URL.createObjectURL(event.target.files[0]));
-  };
+    // const file = event.target.files[0];
+    // setMediaFile(file);
+};
+
 
   const handleBackgroundImageChange = (event) => {
     setBackgroundImage(URL.createObjectURL(event.target.files[0]));
@@ -61,17 +91,11 @@ const EditProfileModal = ({ onClose }) => {
           {profileImage && <img src={profileImage} alt="Profile Preview" className="mt-2 w-20 h-20 object-cover rounded-full" />}
         </div>
 
-        <div className="mb-3">
-          <label className="block text-gray-700 text-sm font-bold mb-2">Background Image</label>
-          <input type="file" onChange={handleBackgroundImageChange} />
-          {backgroundImage && <img src={backgroundImage} alt="Background Preview" className="mt-2 w-full h-20 object-cover rounded" />}
-        </div>
-
         <div className="flex justify-between items-center">
           <button onClick={onClose} className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
             Cancel
           </button>
-          <button onClick={handleSave} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+          <button onClick={handleSave} className="bg-[#19715c] hover:bg-[#19715c50] text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
             Save
           </button>
         </div>
