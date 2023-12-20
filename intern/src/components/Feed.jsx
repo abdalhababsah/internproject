@@ -156,6 +156,52 @@ const Feed = () => {
             console.error('Error deleting post:', error);
         }
     }; 
+    // Assuming you have the userId from the session
+    const handleReportPost = async (postId) => {
+        const userId = sessionStorage.getItem('userId');
+        if (!userId) {
+            console.error('User ID not found in sessionStorage');
+            return;
+        }
+    
+        const reason = prompt('Enter the reason for reporting:');
+    
+        if (!reason) {
+            console.log('Reporting canceled');
+            return;
+        }
+    
+        try {
+            const formData = new FormData();
+            formData.append('user_id', userId);
+            formData.append('post_id', postId);  // Include the post_id field
+            formData.append('reason', reason);
+    console.log(postId);
+    
+            const response = await axios.post(
+                'http://localhost:8000/api/reports',
+                formData,
+                {
+                    headers: {
+                        'X-CSRF-TOKEN': document.head.querySelector('meta[name="csrf-token"]').content,
+                        'Content-Type': 'multipart/form-data',
+                    },
+                }
+            );
+    
+            if (response.status === 201) {
+                console.log('Post reported successfully:', response.data);
+                // Handle the response data as needed
+            } else {
+                console.error('Failed to report post. Status:', response.status);
+            }
+        } catch (error) {
+            console.error('Error reporting post:', error);
+            console.log('Response data:', error.response.data);
+            // Handle errors
+        }
+    };
+      
 
    return (
     <>
@@ -210,6 +256,9 @@ const Feed = () => {
                     
                     <button onClick={handlePostSubmit} className=" bg-[#19715c] px-2 rounded-lg text-white">
               <strong>Post</strong>
+          
+          
+          
             </button></div>               </div>
                     {posts.map((post, index) => (
   <div key={index} className="feed__post">
@@ -234,20 +283,7 @@ const Feed = () => {
                 
                            
                 
-                <div className="feed__actions">
-    <button onClick={() => handleLike(index)}>
-        <i className="fas fa-thumbs-up"></i> {post.likes} Likes
-    </button>
-
-       {userId == post.user_id && (
-        
-                        <button onClick={() => handleDeletePost(post.id, index)}>
-                            <i className="fas fa-trash"></i> Delete
-                        </button>
-                        
-                    )}
-
-</div>
+  
 
 
                             {showComments[index] && (
@@ -273,6 +309,22 @@ const Feed = () => {
                                     e.target.reset();
                                 }}
                             >
+                                              <div className="feed__actions">
+    <button onClick={() => handleLike(index)}>
+        <i className="fas fa-thumbs-up"></i> {post.likes} Likes
+    </button>
+
+    {userId == post.user_id ? (
+        <button onClick={() => handleDeletePost(post.id, index)}>
+            <i className="fas fa-trash"></i> Delete
+        </button>
+    ) : (
+        <button onClick={() => handleReportPost(post.post_id)}>
+    <i className="fas fa-flag"></i> Report
+</button>
+
+    )}
+</div>
                                 <input
                                     type="text"
                                     name="commentText"
