@@ -33,7 +33,7 @@ body {
 
 .feed__postForm button {
   padding: 10px;
-  background-color: #1877f2;
+  background-color: #19715c;
   color: #fff;
   width: 20%;
   border: none;
@@ -92,7 +92,7 @@ body {
 .feed__actions button,
 .feed__comments button {
   padding: 10px;
-  background-color: #1877f2;
+  background-color: #19715c;
   color: #fff;
   border: none;
   border-radius: 5px;
@@ -110,7 +110,7 @@ body {
 
 .feed__postForm button,
 .feed__comments button {
-  background-color: #1877f2;
+  background-color: #19715c;
   color: #fff;
 }
 
@@ -123,7 +123,7 @@ body {
 .feed__postForm input:focus,
 .feed__comments input:focus {
   outline: none;
-  border-color: #1877f2;
+  border-color: #19715c;
 }
 .feed__postForm {
   background-color: #fff;
@@ -145,7 +145,7 @@ body {
 
 .feed__postForm button {
   padding: 10px;
-  background-color: #1877f2;
+  /* background-color: #19715c; */
   color: #fff;
   border: none;
   border-radius: 5px;
@@ -154,9 +154,7 @@ body {
   transition: background-color 0.3s ease-in-out;
 }
 
-.feed__postForm button:hover {
-  background-color: #1558b6;
-}
+
 
 .feed__comments input {
   padding: 10px;
@@ -168,7 +166,7 @@ body {
 
 .feed__comments button {
   padding: 10px;
-  background-color: #1877f2;
+  background-color: #19715c;
   color: #fff;
   border: none;
   border-radius: 5px;
@@ -196,7 +194,7 @@ body {
 
 .comment-form button {
   padding: 10px;
-  background-color: #1877f2;
+  background-color: #19715c;
   color: #fff;
   border: none;
   border-radius: 0 5px 5px 0;
@@ -234,9 +232,20 @@ body {
   padding: 15px;
   border-bottom: 1px solid #ccc;
 }
+@import url(https://fonts.googleapis.com/css?family=:regular,bold,italic&subset=latin,latin-ext);
+@import url(https://fonts.googleapis.com/css?family=Blaka+Ink&family=Rubik+Bubbles&display=swap);
+@import url(http://fonts.googleapis.com/earlyaccess/droidarabickufi.css);
+
+.text-logo,.droid-arabic-kufi {
+  font-family: 'Droid Arabic Kufi', serif;
+}
+.text-logo{
+  font-family: "Blaka Ink",serif;
+}
 
 .header__logo {
   height: 40px;
+
 }
 
 .header__search input {
@@ -320,7 +329,7 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  align-items: center;
+  align-items:flex-start;
   border-bottom: 1px solid #ccc;
   padding: 10px 0;
 }
@@ -338,9 +347,9 @@ body {
 }
 
 .friend-request-actions button {
-  padding: 8px;
+  padding: 2px;
   margin-left: 10px;
-  background-color: #1877f2; /* Green for accept button */
+  background-color: #197; 
   color: #fff;
   border: none;
   border-radius: 5px;
@@ -348,7 +357,11 @@ body {
 }
 
 .friend-request-actions button.reject {
-  background-color: #f44336; /* Red for reject button */
+  background-color: #f86055; /* Red for reject button */
+}
+
+.date{
+  font-size: 10px;
 }
 .profile {
   padding: 20px;
@@ -384,7 +397,7 @@ body {
 
 .profile__button {
   padding: 8px 16px;
-  background-color: #1877f2;
+  background-color: #19715c;
   color: #fff;
   border: none;
   border-radius: 5px;
@@ -446,7 +459,7 @@ body {
 
 .profile__comment-button {
   padding: 8px 16px;
-  background-color:  #1877f2 !important ;
+  background-color:  #19715c !important ;
   color: #fff;
   border: none;
   border-radius: 5px;
@@ -471,12 +484,12 @@ body {
 }
 
 .profile__like-button {
-  background-color: #1877f2;
+  background-color: #19715c;
   color: #fff;
 }
 
 .profile__edit-button {
-  background-color: #1877f2;
+  background-color: #19715c;
   color: #fff;
 }
 
@@ -486,11 +499,11 @@ body {
 }
 
 .profile__comment-button {
-  background-color: #1877f2;
+  background-color: #19715c;
   color: #fff;
 }
 .profile__post-button {
-  background-color: #1877f2!important; /* Green color */
+  background-color: #19715c!important; /* Green color */
   color: white;
   padding: 5px 15px;
   border: none;
@@ -501,11 +514,11 @@ body {
 }
 
 .profile__post-button:hover {
-  background-color: #1877f2; /* Darker green color on hover */
+  background-color: #19715c; /* Darker green color on hover */
 }
 /* Register.css */
 .auth-container {
-  background-color: #1877f2;
+  background-color: #19715c;
   color: #fff;
   padding: 20px;
   border-radius: 5px;
@@ -535,7 +548,7 @@ body {
 .auth-container button {
   padding: 10px;
   background-color: #fff;
-  color: #1877f2;
+  color: #19715c;
   border: none;
   border-radius: 3px;
   cursor: pointer;

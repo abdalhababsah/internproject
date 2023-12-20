@@ -12,19 +12,32 @@ function FriendRequests() {
         setFriendRequests(data.pendingRequests.map(request => ({
           id: request.user_id,
           name: request.sender_name,
-          picture: {img: request.sender_image},
+          picture: {img: request.sender_image!=null ? 'http://127.0.0.1:8000/user/'+request.sender_image : 'https://pbs.twimg.com/profile_images/446867705560190977/esTJZMLH.png'},
+          reqId: request.friend_request_id
         })));
       });
   }, []);
 
   const handleAccept = (id) => {
-    // Handle accept action
-    console.log(`Accepted friend request with ID: ${id}`);
+    fetch(`http://127.0.0.1:8000/api/friends/${id}?status=Accepted`, {
+      method: 'PUT',
+    })
+      .then(response => response.json())
+      .then(data => {
+        console.log(`Accepted friend request with ID: ${id}`);
+        window.location.reload();
+      });
   };
 
   const handleReject = (id) => {
-    // Handle reject action
-    console.log(`Rejected friend request with ID: ${id}`);
+    fetch(`http://127.0.0.1:8000/api/friends/${id}?status=Rejected`, {
+      method: 'PUT',
+    })
+      .then(response => response.json())
+      .then(data => {
+        console.log(`Rejected friend request with ID: ${id}`);
+        window.location.reload();
+      });
   };
 
   return (
@@ -37,8 +50,8 @@ function FriendRequests() {
             <p>{request.name}</p>
           </div>
           <div className="friend-request-actions">
-            <button onClick={() => handleAccept(request.id)}>Accept</button>
-            <button  className="reject" onClick={() => handleReject(request.id)}>Reject</button>
+            <button onClick={() => handleAccept(request.reqId)}>Accept</button>
+            <button  className="reject" onClick={() => handleReject(request.reqId)}>Reject</button>
           </div>
         </div>
       ))}

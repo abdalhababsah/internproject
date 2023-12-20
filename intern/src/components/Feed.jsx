@@ -121,9 +121,11 @@ const Feed = () => {
 
     useEffect(() => {
         const fetchPosts = async () => {
-            try {                             
-                const response = await axios.get(`http://localhost:8000/api/posts?id=${userId}`);
-               
+            try {
+                let userId = sessionStorage.getItem('userId');
+                const response = await axios.get('http://localhost:8000/api/posts?id='+userId);
+                
+                // Check if response.data.posts is defined and has a length property
                 if (response.data.posts && response.data.posts.length) {
                     setPosts(response.data.posts);
                     setShowComments(Array(response.data.posts.length).fill(false));
@@ -168,6 +170,7 @@ const Feed = () => {
                             value={postText}
                             onChange={handlePostChange}
                         ></textarea>
+                        <div className="flex items-center justify-between p-4 rounded-lg mb-4">
                         <div className="feed__postOptions">
                             <label>
                                 <input
@@ -203,13 +206,15 @@ const Feed = () => {
                         {postType !== 'text' && (
                             <input type="file" accept={postType === 'image' ? 'image/*' : 'video/*'} onChange={handleMediaChange} />
                         )}
-                        <button onClick={handlePostSubmit}>Post</button>
-                    </div>
-                                        
+                        
+                    
+                    <button onClick={handlePostSubmit} className=" bg-[#19715c] px-2 rounded-lg text-white">
+              <strong>Post</strong>
+            </button></div>               </div>
                     {posts.map((post, index) => (
   <div key={index} className="feed__post">
     <div className="feed__user-info">
-                                <img src={img} alt={post.user.name} />
+                                <img src={post.user.profile_image_url} alt={post.user.name} />
                                 <p>{post.user.name}</p>
                             </div>
       <div>
