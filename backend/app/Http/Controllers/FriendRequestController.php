@@ -28,7 +28,7 @@ class FriendRequestController extends Controller
     $friends = $friend_requests->map(function ($request) use ($userId) {
         return $request->sender_id == $userId ? $request->receiver : $request->sender;
     });
-    
+
     return response()->json(['friends' => $friends]);
     }
 
@@ -60,6 +60,18 @@ return response()->json(['pendingRequests' => $pendingRequests]);
             'sender_id' => 'required|exists:users,user_id',
             'receiver_id' => 'required|exists:users,user_id',
         ]);
+
+        // Check if there is an existing pending friend request
+        $existingRequest = Friend_Request::where([
+            'sender_id' => $validatedData['sender_id'],
+            'receiver_id' => $validatedData['receiver_id'],
+            'status' => 'Pending',
+        ])->first();
+
+        if ($existingRequest) {
+            // You may want to customize this response based on your application's requirements
+            return response()->json(['message' => 'Friend request already sent']);
+        }
 
         // Create a new friend request
         $friendRequest = new Friend_Request();
@@ -105,7 +117,7 @@ return response()->json(['pendingRequests' => $pendingRequests]);
             $request->validate([
                 'status' => 'required|in:Pending,Accepted,Rejected'
             ]);
-            
+
             $friend_Request->update(['status' => $request->status]);
 
             return response()->json($friend_Request);
