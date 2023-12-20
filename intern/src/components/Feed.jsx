@@ -114,24 +114,20 @@ const Feed = () => {
         setShowComments(updatedShowComments);
     };
 
-    const handleDeletePost = (index) => {
-        const updatedPosts = posts.filter((_, i) => i !== index);
-        setPosts(updatedPosts);
-        const updatedShowComments = showComments.filter((_, i) => i !== index);
-        setShowComments(updatedShowComments);
-    };
+
+    const userId = sessionStorage.getItem('userId');
+
+    
 
     useEffect(() => {
         const fetchPosts = async () => {
-            try {
-                const response = await axios.get('http://localhost:8000/api/posts?id=5');
-                
-                // Check if response.data.posts is defined and has a length property
+            try {                             
+                const response = await axios.get(`http://localhost:8000/api/posts?id=${userId}`);
+               
                 if (response.data.posts && response.data.posts.length) {
                     setPosts(response.data.posts);
-    
-                    // Initialize showComments with an array of the same length as posts, filled with false
                     setShowComments(Array(response.data.posts.length).fill(false));
+                    console.log(userId);
                 } else {
                     console.error('Posts not found in API response');
                 }
@@ -139,43 +135,25 @@ const Feed = () => {
                 console.error('Error fetching posts:', error);
             }
         };
-            // ... (existing code)
-        
-            const handleDeletePost = async (postId, index) => {
-                try {
-                    const userId = sessionStorage.getItem('userId');
-            
-                    if (!userId) {
-                        console.error('User ID not found in sessionStorage');
-                        return;
-                    }
-            
-                    // Make an API request to delete the post
-                    const response = await axios.delete(`http://localhost:8000/api/posts/${postId}`, {
-                        headers: {
-                            'X-CSRF-TOKEN': document.head.querySelector('meta[name="csrf-token"]').content,
-                        },
-                    });
-            
-                    if (response.status === 200) {
-                        // Update state to remove the deleted post
-                        const updatedPosts = [...posts];
-                        updatedPosts.splice(index, 1); // Remove the post at the specified index
-                        setPosts(updatedPosts);
-            
-                        const updatedShowComments = [...showComments];
-                        updatedShowComments.splice(index, 1); // Remove the corresponding showComments entry
-                        setShowComments(updatedShowComments);
-                    } else {
-                        console.error('Error deleting post');
-                    }
-                } catch (error) {
-                    console.error('Error deleting post:', error);
-                }
-            };
-            
+
         fetchPosts();
-    }, []); // Empty dependency array ensures that the effect runs only once on component mount
+    }, [userId]);
+    
+    const handleDeletePost = async (postId, index) => {
+        try {
+            // Send a request to delete the post on the server
+            await axios.delete(`http://localhost:8000/api/posts/${postId}`);
+            
+            // Update the local state to reflect the deleted post
+            const updatedPosts = posts.filter((_, i) => i !== index);
+            setPosts(updatedPosts);
+            
+            const updatedShowComments = showComments.filter((_, i) => i !== index);
+            setShowComments(updatedShowComments);
+        } catch (error) {
+            console.error('Error deleting post:', error);
+        }
+    }; 
 
    return (
     <>
@@ -256,11 +234,16 @@ const Feed = () => {
         <i className="fas fa-thumbs-up"></i> {post.likes} Likes
     </button>
 
-    <button onClick={() => handleDeletePost(post.id, index)}>
-    <i className="fas fa-trash"></i> Delete
-</button>
+       {userId == post.user_id && (
+        
+                        <button onClick={() => handleDeletePost(post.id, index)}>
+                            <i className="fas fa-trash"></i> Delete
+                        </button>
+                        
+                    )}
 
 </div>
+
 
                             {showComments[index] && (
                                 <div className="feed__comments">
