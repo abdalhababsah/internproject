@@ -19,7 +19,7 @@ const Sidebar = () => {
       
       {/* Nav items */}
       <nav>
-        <NavLink exact to="/admin/dashboard" className="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-500 hover:text-white" activeClassName="bg-blue-500">
+        <NavLink exact to="/dashboard" className="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-500 hover:text-white" activeClassName="bg-blue-500">
           <div className="flex items-center">
             {/* <DashboardIcon className="w-6 h-6" /> */}
             <span className="ml-4">Dashboard</span>
