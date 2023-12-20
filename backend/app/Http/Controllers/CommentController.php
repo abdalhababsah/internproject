@@ -12,6 +12,7 @@ class CommentController extends Controller
      */
     public function index(Request $request)
     {
+        // Check if 'post_id' is present in the request
         if ($request->has('post_id')) {
             // Fetch comments for the specified post
             $postId = $request->input('post_id');
@@ -20,21 +21,8 @@ class CommentController extends Controller
             // If 'post_id' is not provided, return all comments
             $comments = Comment::all();
         }
-        if ($comments->isEmpty()) {
-            return response()->json(['message' => 'No comments found for this post'], 404);
-        }
 
-        return response()->json( $comments);
-        // return Comment::all();
-
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
+        return response()->json(['comments' => $comments]);
     }
 
     /**
@@ -42,10 +30,12 @@ class CommentController extends Controller
      */
     public function store(Request $request)
     {
-        //
-        $comment=Comment::create($request->all());
-        return response()->json($comment, 201);
-
+        $comment = new Comment;
+        $comment->post_id = $request->post_id;
+        $comment->user_id = $request->user_id; // If user authentication is required
+        $comment->comment_text = $request->comment_text;
+        $comment->save();
+        return response()->json(['message' => 'Comment added successfully!', 'comment' => $comment]);
     }
 
     /**
@@ -53,17 +43,7 @@ class CommentController extends Controller
      */
     public function show(Comment $comment)
     {
-        //
         return response()->json($comment);
-
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Comment $comment)
-    {
-        //
     }
 
     /**
@@ -71,11 +51,13 @@ class CommentController extends Controller
      */
     public function update(Request $request, Comment $comment)
     {
-        //
-        $comment->update($request->all());
+        // Validate the request data
+        $validatedData = $request->validate([
+            'comment_text' => 'sometimes|string',
+        ]);
 
+        $comment->update($validatedData);
         return response()->json($comment);
-
     }
 
     /**
@@ -83,9 +65,22 @@ class CommentController extends Controller
      */
     public function destroy(Comment $comment)
     {
-        //
         $comment->delete();
-
-    return response()->json(null, 204);
+        return response()->json(null, 204);
     }
+
+    public function showCommentsByPost($post_id)
+{
+    // Eager load the user relationship along with comments
+    $comments = Comment::with('user')
+                       ->where('post_id', $post_id)
+                       ->get();
+
+    if ($comments->isEmpty()) {
+        return response()->json(['message' => 'No comments found for this post'], 404);
+    }
+
+    return response()->json(['comments' => $comments]);
+}
+
 }
