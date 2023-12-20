@@ -281,35 +281,7 @@ const Feed = () => {
       </video>
     )}
                 
-                           
-                
-  
-
-
-                                {showComments[index] && (
-                                    <div className="feed__comments">
-                                        {post.comments.map((comment, commentIndex) => (
-                                            <div key={commentIndex} className="feed__comment">
-                                                <div className="feed__user-info">
-                                                    <img src={img} alt={comment.user.name} />
-                                                    <p>{comment.user.name}</p>
-                                                </div>
-                                                <p>{comment.text}</p>
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
-
-                            <form
-                                className="comment-form"
-                                onSubmit={(e) => {
-                                    e.preventDefault();
-                                    const commentText = e.target.elements.commentText.value;
-                                    handleComment(index, commentText);
-                                    e.target.reset();
-                                }}
-                            >
-                                              <div className="feed__actions">
+                <div className="feed__actions">
     <button onClick={() => handleLike(index)}>
         <i className="fas fa-thumbs-up"></i> {post.likes} Likes
     </button>
@@ -324,7 +296,35 @@ const Feed = () => {
 </button>
 
     )}
-</div>
+</div>                  
+                
+  
+
+
+                                {/* {showComments[index] && (
+                                    <div className="feed__comments">
+                                        {post.comments.map((comment, commentIndex) => (
+                                            <div key={commentIndex} className="feed__comment">
+                                                <div className="feed__user-info">
+                                                    <img src={img} alt={comment.user.name} />
+                                                    <p>{comment.user.name}</p>
+                                                </div>
+                                                <p>{comment.text}</p>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )} */}
+
+                            <form
+                                className="comment-form"
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    const commentText = e.target.elements.commentText.value;
+                                    handleComment(index, commentText);
+                                    e.target.reset();
+                                }}
+                            >
+      
                                 <input
                                     type="text"
                                     name="commentText"
