@@ -10,7 +10,12 @@ class CreatePostsTable extends Migration
     {
         Schema::create('posts', function (Blueprint $table) {
             $table->id('post_id');
-            $table->unsignedBigInteger('user_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('user_id')
+                ->unsigned()
+                ->references('user_id')
+                ->on('users')
+                ->onDelete('cascade');
+            // $table->unsignedBigInteger('')->constrained('users')->onDelete('cascade');
             $table->text('content');
             $table->string('media_url')->nullable();
             $table->timestamps();

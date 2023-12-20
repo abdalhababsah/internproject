@@ -68,6 +68,7 @@ Route::get('/friends/{userId}', [FriendRequestController::class, 'index']);
 Route::put('/friends/{id}',[FriendRequestController::class,'update']);
 Route::get('/pending-requests/{userId}', [FriendRequestController::class, 'selectPendding']);
 Route::post('/send-friend-request', [FriendRequestController::class, 'sendingFriendRequest']);
+Route::get('canSend/{userId}', [FriendRequestController::class,'show']);
 // // // // // // // // // //
 
 Route::resource('likes', LikeController::class);

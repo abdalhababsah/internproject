@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Friend_Request;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -106,9 +107,20 @@ return response()->json(['pendingRequests' => $pendingRequests]);
     /**
      * Display the specified resource.
      */
-    public function show(Friend_Request $friend_Request)
+    public function show($userId)
     {
-
+        $friends = Friend_Request::where(function ($query) use ($userId) {
+            $query->where('sender_id', $userId)
+                ->orWhere('receiver_id', $userId);
+        })
+        ->pluck('sender_id', 'receiver_id')
+        ->toArray();
+    
+      $users = User::where('user_id', '!=', $userId)
+        ->whereNotIn('user_id', array_keys($friends))
+        ->get(['user_id', 'name', 'profile_image_url as img']);
+    
+    return response()->json(['users' => $users]);
     }
 
     /**
