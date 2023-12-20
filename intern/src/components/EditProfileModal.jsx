@@ -6,49 +6,52 @@ const EditProfileModal = ({ onClose }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [profileImage, setProfileImage] = useState(null);
-  const [backgroundImage, setBackgroundImage] = useState(null);
-
-  let nam=sessionStorage.getItem('userName');
+  
+  const handleProfileImageChange = (event) => {
+    const file = event.target.files[0];
+    setProfileImage(file);
+};
+if(!name){
+  let name=sessionStorage.getItem('userName');}
   let userId = sessionStorage.getItem('userId');
 
     const handleSave = async (event) => {
       event.preventDefault();
 
       try {
-        const formData = new FormData();
-        formData.append('user_id', userId);
+        let formData = new FormData();
+        // formData.get('name',name)
+        // let mm=formData.append(userId, 'user_id');
         formData.append('name', name);
         formData.append('email', email);
         formData.append('password', password);
         if (profileImage != null) {
-            formData.append('profile_media_url', profileImage);
+          formData.append('profile_media_url', profileImage);
         }
-    
-        const response = await axios.put('http://localhost:8000/api/users/'+userId, formData,{
-          headers: {
-            'Content-Type': 'multipart/form-data',
-            'X-CSRF-TOKEN': document.head.querySelector('meta[name="csrf-token"]').content,
+        formData.append('_method','PUT')
+        console.log(name);
+        console.log(userId);
+    console.log(formData);
+        const response = await axios.post(`http://localhost:8000/api/users/${userId}`, formData,{
+        //   headers: {
+        //     'Content-Type': 'multipart/form-data',
+        //     'X-CSRF-TOKEN': document.head.querySelector('meta[name="csrf-token"]').content,
   
-        },
+        // },
         });
    
       } catch (error) {
         console.error('Error posting to the API:', error);
       }
 
-    onClose(); // Close modal after saving
+    // onClose(); // Close modal after saving
   };
 
-  const handleProfileImageChange = (event) => {
-    // (URL.createObjectURL(event.target.files[0]));setMediaFile
-    const file = event.target.files[0];
-    setProfileImage(file);
-};
 
 
-  const handleBackgroundImageChange = (event) => {
-    setBackgroundImage(URL.createObjectURL(event.target.files[0]));
-  };
+  // const handleBackgroundImageChange = (event) => {
+  //   setBackgroundImage(URL.createObjectURL(event.target.files[0]));
+  // };
 
   return (
     <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex justify-center items-center">
@@ -59,6 +62,7 @@ const EditProfileModal = ({ onClose }) => {
           <label className="block text-gray-700 text-sm font-bold mb-2">Name</label>
           <input
             type="text"
+            name="name"
             value={name}
             onChange={(e) => setName(e.target.value)}
             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"

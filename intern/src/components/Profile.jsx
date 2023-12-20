@@ -1,5 +1,5 @@
 // Profile.jsx#19715c19715c
-import React, { useState ,useEffect ,useNavigate} from 'react';
+import React, { useState ,useEffect} from 'react';
 import axios from 'axios';
 import img from '../images/feed-2.jpg';
 import Sidebar from './Sidebar';
@@ -116,7 +116,7 @@ const Profile = () => {
       if (newPost.type !== 'text') {
           formData.append('media_url', mediaFile);
       }
-  
+  console.log(formData.get);
       const response = await axios.post('http://localhost:8000/api/posts', formData,{
         headers: {
           'Content-Type': 'multipart/form-data',
