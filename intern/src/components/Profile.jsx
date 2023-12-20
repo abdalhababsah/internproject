@@ -62,8 +62,9 @@ const Profile = () => {
     content:request.content,
     media:{m:request.media_url!=null ? 'http://localhost:8000/posts/'+request.media_url:''},
     type:isImageOrVideo(request.media_url),
-    created:formatDate(request.created_at)
-  })));
+    created:formatDate(request.created_at),
+    
+  })));//{handleLikeSum(post_id)}
 
 });
 }, [])
@@ -162,6 +163,25 @@ const Profile = () => {
       // setPostType('text');
     // }
   };
+  const handleLikeSum = (postId) => {
+    axios
+    .get(`http://127.0.0.1:8000/api/likes/${postId}`, {
+      headers: {
+        // 'Content-Type': 'multipart/form-data', // You don't need this header for JSON data
+        "X-CSRF-TOKEN": document.head.querySelector(
+          'meta[name="csrf-token"]'
+        ).content,
+      },
+    })
+    .then((response) => {
+      // Assign the number to the post.likes property
+      setlikes(response.data);
+      console.log(likes); // Log the number of likes
+    })
+    .catch((error) => {
+      console.error(error); // Handle any errors
+    });
+  }
   const handleLike = (postId) => {
     console.log(postId);
     console.log(userId);
@@ -188,23 +208,7 @@ const Profile = () => {
         console.error(error); // Axios handles errors better than fetch
       });
 
-      axios
-      .get(`http://127.0.0.1:8000/api/likes/${postId}`, {
-        headers: {
-          // 'Content-Type': 'multipart/form-data', // You don't need this header for JSON data
-          "X-CSRF-TOKEN": document.head.querySelector(
-            'meta[name="csrf-token"]'
-          ).content,
-        },
-      })
-      .then((response) => {
-        // Assign the number to the post.likes property
-        setlikes(response.data);
-        console.log(likes); // Log the number of likes
-      })
-      .catch((error) => {
-        console.error(error); // Handle any errors
-      });
+      handleLikeSum(postId);
       
   };
     
@@ -360,7 +364,7 @@ const Profile = () => {
               <button className="bg-[#19715c] hover:bg-[#478298] text-[#d3efe9] px-2 py-1 rounded transition duration-300" onClick={() => handleLike(post.id)}>
                 Like
               </button>
-              <span className="text-[#19715c]">{likes} Likes</span>
+              <span className="text-[#19715c]" >{likes} Likes</span>
               <button className="bg-[#19715c] hover:bg-[#478298] text-[#d3efe9] px-2 py-1 rounded transition duration-300" onClick={() => handleEdit(post.id, post.content)}>
                 Edit
               </button>
