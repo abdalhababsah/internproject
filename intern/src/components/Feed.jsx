@@ -214,7 +214,7 @@ const Feed = () => {
                     {posts.map((post, index) => (
   <div key={index} className="feed__post">
     <div className="feed__user-info">
-                                <img src={post.user.profile_image_url} alt={post.user.name} />
+                                <img src={post.user.profile_image_url!=null ? 'http://127.0.0.1:8000/user/'+post.user.profile_image_url: 'https://pbs.twimg.com/profile_images/446867705560190977/esTJZMLH.png'} alt={post.user.name} />
                                 <p>{post.user.name}</p>
                             </div>
       <div>
