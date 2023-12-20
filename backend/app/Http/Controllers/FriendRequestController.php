@@ -61,12 +61,21 @@ return response()->json(['pendingRequests' => $pendingRequests]);
             'receiver_id' => 'required|exists:users,user_id',
         ]);
 
-        // Check if there is an existing pending friend request
-        $existingRequest = Friend_Request::where([
-            'sender_id' => $validatedData['sender_id'],
-            'receiver_id' => $validatedData['receiver_id'],
-            'status' => 'Pending',
-        ])->first();
+        // Check if sender and receiver IDs are the same
+        if ($validatedData['sender_id'] === $validatedData['receiver_id']) {
+            return response()->json(['message' => 'Sender and receiver cannot be the same']);
+        }
+
+        // Check if there is an existing pending friend request in either direction
+        $existingRequest = Friend_Request::where(function ($query) use ($validatedData) {
+            $query->where('sender_id', $validatedData['sender_id'])
+                ->where('receiver_id', $validatedData['receiver_id'])
+                ->where('status', 'Pending');
+        })->orWhere(function ($query) use ($validatedData) {
+            $query->where('sender_id', $validatedData['receiver_id'])
+                ->where('receiver_id', $validatedData['sender_id'])
+                ->where('status', 'Pending');
+        })->first();
 
         if ($existingRequest) {
             // You may want to customize this response based on your application's requirements
@@ -84,6 +93,9 @@ return response()->json(['pendingRequests' => $pendingRequests]);
 
         return response()->json(['message' => 'Friend request sent successfully']);
     }
+
+
+
 
 
     public function store(Request $request)
