@@ -70,7 +70,7 @@ class CommentController extends Controller
     }
 
     public function showCommentsByPost($post_id)
-{
+    {
     // Eager load the user relationship along with comments
     $comments = Comment::with('user')
                        ->where('post_id', $post_id)
@@ -81,6 +81,6 @@ class CommentController extends Controller
     }
 
     return response()->json(['comments' => $comments]);
-}
+    }
 
-}
+    }

@@ -17,7 +17,7 @@ const Header = () => {
     <div >
       <div className="left flex items-center justify-between px-4 py-2 border-b border-borderColor sticky top-0 bg-bg text-textColor">
         <Link to="/" style={{ textDecoration: "none" }}>
-          <span className="text-xl font-bold text-logo">lamasocial</span>
+          <span className="text-xl font-bold text-logo">social</span>
         </Link>
         <HomeOutlinedIcon className="text-xl" />
   
