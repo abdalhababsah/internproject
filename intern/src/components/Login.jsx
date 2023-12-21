@@ -56,7 +56,7 @@ const Login = () => {
         if (user.role_id === 1) {
           navigate('/');
         } else if (user.role_id === 4) {
-          navigate('/dashboard');
+          navigate('/admin');
         }
 
       } catch (error) {

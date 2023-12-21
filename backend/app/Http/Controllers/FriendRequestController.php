@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Friend_Request;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -28,7 +29,7 @@ class FriendRequestController extends Controller
     $friends = $friend_requests->map(function ($request) use ($userId) {
         return $request->sender_id == $userId ? $request->receiver : $request->sender;
     });
-    
+
     return response()->json(['friends' => $friends]);
     }
 
@@ -61,6 +62,27 @@ return response()->json(['pendingRequests' => $pendingRequests]);
             'receiver_id' => 'required|exists:users,user_id',
         ]);
 
+        // Check if sender and receiver IDs are the same
+        if ($validatedData['sender_id'] === $validatedData['receiver_id']) {
+            return response()->json(['message' => 'Sender and receiver cannot be the same']);
+        }
+
+        // Check if there is an existing pending friend request in either direction
+        $existingRequest = Friend_Request::where(function ($query) use ($validatedData) {
+            $query->where('sender_id', $validatedData['sender_id'])
+                ->where('receiver_id', $validatedData['receiver_id'])
+                ->where('status', 'Pending');
+        })->orWhere(function ($query) use ($validatedData) {
+            $query->where('sender_id', $validatedData['receiver_id'])
+                ->where('receiver_id', $validatedData['sender_id'])
+                ->where('status', 'Pending');
+        })->first();
+
+        if ($existingRequest) {
+            // You may want to customize this response based on your application's requirements
+            return response()->json(['message' => 'Friend request already sent']);
+        }
+
         // Create a new friend request
         $friendRequest = new Friend_Request();
         $friendRequest->sender_id = $validatedData['sender_id'];
@@ -74,6 +96,9 @@ return response()->json(['pendingRequests' => $pendingRequests]);
     }
 
 
+
+
+
     public function store(Request $request)
     {
 
@@ -82,9 +107,20 @@ return response()->json(['pendingRequests' => $pendingRequests]);
     /**
      * Display the specified resource.
      */
-    public function show(Friend_Request $friend_Request)
+    public function show($userId)
     {
-
+        $friends = Friend_Request::where(function ($query) use ($userId) {
+            $query->where('sender_id', $userId)
+                ->orWhere('receiver_id', $userId);
+        })
+        ->pluck('sender_id', 'receiver_id')
+        ->toArray();
+    
+        $users = User::where('user_id', '!=', $userId)
+        ->whereNotIn('user_id', array_keys($friends))
+        ->get(['user_id', 'name', 'profile_image_url as img']);
+    
+    return response()->json(['users' => $users]);
     }
 
     /**
@@ -105,7 +141,7 @@ return response()->json(['pendingRequests' => $pendingRequests]);
             $request->validate([
                 'status' => 'required|in:Pending,Accepted,Rejected'
             ]);
-            
+
             $friend_Request->update(['status' => $request->status]);
 
             return response()->json($friend_Request);

@@ -65,8 +65,18 @@ class CommentController extends Controller
      */
     public function destroy(Comment $comment)
     {
-        $comment->delete();
-        return response()->json(null, 204);
+        // Get the user ID from the frontend session
+        $frontendUserId = session('user_id');
+
+        // Check if the user from the frontend session is the owner of the comment
+        if ($frontendUserId && $comment->user_id === $frontendUserId) {
+            // User is the owner, proceed with deletion
+            $comment->delete();
+            return response()->json(['message' => 'Comment deleted successfully'], 200);
+        } else {
+            // User is not the owner, return unauthorized response
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
     }
 
     public function showCommentsByPost($post_id)

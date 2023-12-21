@@ -11,8 +11,7 @@ import Login from './components/Login';
 import PlayerTable from './components/Dashboard/PlayerTable';
 import Register from './components/Register';
 import Admin from './pages/admin.jsx';
-
-
+import Addfriend from './components/Addfriend.jsx';
 const App = () => {
   return (
     <BrowserRouter>
@@ -23,6 +22,7 @@ const App = () => {
       <Route path='/dashboard' element={<PlayerTable/>}/>
       <Route path='/register' element={<Register/>}/>
       <Route path="/admin" element={<Admin/>} />
+      <Route path="/addfriends" element={<Addfriend/>}/>
     </Routes>
     </BrowserRouter>
     

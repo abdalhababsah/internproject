@@ -27,20 +27,20 @@ const Feed = () => {
 
     const handlePostSubmit = async (event) => {
         event.preventDefault();
-    
+
         if (postType === 'text' && postText.trim() === '') {
             return;
         }
-    
+
         const userId = sessionStorage.getItem('userId');
-    
+
         if (!userId) {
             console.error('User ID not found in sessionStorage');
             return;
         }
-    
+
         const currentUser = { name: 'ibahim', picture: 'user_picture_url' };
-    
+
         let newPost;
         if (postType === 'text') {
             newPost = {
@@ -54,7 +54,7 @@ const Feed = () => {
             };
         } else if (postType === 'image' || postType === 'video') {
             const mediaUrl = URL.createObjectURL(mediaFile);
-    
+
             newPost = {
                 id: posts.length + 1,
                 user_id: userId,
@@ -66,7 +66,7 @@ const Feed = () => {
                 user: currentUser,
             };
         }
-    
+
         try {
             const formData = new FormData();
             formData.append('user_id', userId);
@@ -74,17 +74,17 @@ const Feed = () => {
             if (newPost.type !== 'text') {
                 formData.append('media_url', mediaFile);
             }
-    
+
             const response = await axios.post('http://localhost:8000/api/posts', formData, {
                 headers: {
                     'X-CSRF-TOKEN': document.head.querySelector('meta[name="csrf-token"]').content,
                     'Content-Type': 'multipart/form-data',
                 },
             });
-    
+
             if (response.status === 201) {
                 setPosts([...posts, newPost]);
-    
+
                 setPostText('');
                 setPostType('text');
                 setMediaFile(null);
@@ -94,7 +94,7 @@ const Feed = () => {
             console.error('Error posting to the API:', error);
         }
     };
-    
+
     const handleLike = (index) => {
         const updatedPosts = [...posts];
         updatedPosts[index].likes += 1;
@@ -117,14 +117,14 @@ const Feed = () => {
 
     const userId = sessionStorage.getItem('userId');
 
-    
+
 
     useEffect(() => {
         const fetchPosts = async () => {
             try {
                 let userId = sessionStorage.getItem('userId');
-                const response = await axios.get('http://localhost:8000/api/posts?id='+userId);
-                
+                const response = await axios.get('http://localhost:8000/api/posts?id=' + userId);
+
                 // Check if response.data.posts is defined and has a length property
                 if (response.data.posts && response.data.posts.length) {
                     setPosts(response.data.posts);
@@ -140,22 +140,68 @@ const Feed = () => {
 
         fetchPosts();
     }, [userId]);
-    
+
     const handleDeletePost = async (postId, index) => {
         try {
             // Send a request to delete the post on the server
             await axios.delete(`http://localhost:8000/api/posts/${postId}`);
-            
+
             // Update the local state to reflect the deleted post
             const updatedPosts = posts.filter((_, i) => i !== index);
             setPosts(updatedPosts);
-            
+
             const updatedShowComments = showComments.filter((_, i) => i !== index);
             setShowComments(updatedShowComments);
         } catch (error) {
             console.error('Error deleting post:', error);
         }
     }; 
+    // Assuming you have the userId from the session
+    const handleReportPost = async (postId) => {
+        const userId = sessionStorage.getItem('userId');
+        if (!userId) {
+            console.error('User ID not found in sessionStorage');
+            return;
+        }
+    
+        const reason = prompt('Enter the reason for reporting:');
+    
+        if (!reason) {
+            console.log('Reporting canceled');
+            return;
+        }
+    
+        try {
+            const formData = new FormData();
+            formData.append('user_id', userId);
+            formData.append('post_id', postId);  // Include the post_id field
+            formData.append('reason', reason);
+    console.log(postId);
+    
+            const response = await axios.post(
+                'http://localhost:8000/api/reports',
+                formData,
+                {
+                    headers: {
+                        'X-CSRF-TOKEN': document.head.querySelector('meta[name="csrf-token"]').content,
+                        'Content-Type': 'multipart/form-data',
+                    },
+                }
+            );
+    
+            if (response.status === 201) {
+                console.log('Post reported successfully:', response.data);
+                // Handle the response data as needed
+            } else {
+                console.error('Failed to report post. Status:', response.status);
+            }
+        } catch (error) {
+            console.error('Error reporting post:', error);
+            console.log('Response data:', error.response.data);
+            // Handle errors
+        }
+    };
+      
 
    return (
     <>
@@ -210,6 +256,9 @@ const Feed = () => {
                     
                     <button onClick={handlePostSubmit} className=" bg-[#19715c] px-2 rounded-lg text-white">
               <strong>Post</strong>
+          
+          
+          
             </button></div>               </div>
                     {posts.map((post, index) => (
   <div key={index} className="feed__post">
@@ -232,37 +281,39 @@ const Feed = () => {
       </video>
     )}
                 
-                           
-                
                 <div className="feed__actions">
     <button onClick={() => handleLike(index)}>
         <i className="fas fa-thumbs-up"></i> {post.likes} Likes
     </button>
 
-       {userId == post.user_id && (
-        
-                        <button onClick={() => handleDeletePost(post.id, index)}>
-                            <i className="fas fa-trash"></i> Delete
-                        </button>
-                        
-                    )}
+    {userId == post.user_id ? (
+        <button onClick={() => handleDeletePost(post.post_id, index)}>
+            <i className="fas fa-trash"></i> Delete
+        </button>
+    ) : (
+        <button onClick={() => handleReportPost(post.post_id)}>
+    <i className="fas fa-flag"></i> Report
+</button>
 
-</div>
+    )}
+</div>                  
+                
+  
 
 
-                            {showComments[index] && (
-                                <div className="feed__comments">
-                                    {post.comments.map((comment, commentIndex) => (
-                                        <div key={commentIndex} className="feed__comment">
-                                            <div className="feed__user-info">
-                                                <img src={img} alt={comment.user.name} />
-                                                <p>{comment.user.name}</p>
+                                {/* {showComments[index] && (
+                                    <div className="feed__comments">
+                                        {post.comments.map((comment, commentIndex) => (
+                                            <div key={commentIndex} className="feed__comment">
+                                                <div className="feed__user-info">
+                                                    <img src={img} alt={comment.user.name} />
+                                                    <p>{comment.user.name}</p>
+                                                </div>
+                                                <p>{comment.text}</p>
                                             </div>
-                                            <p>{comment.text}</p>
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
+                                        ))}
+                                    </div>
+                                )} */}
 
                             <form
                                 className="comment-form"
@@ -273,6 +324,7 @@ const Feed = () => {
                                     e.target.reset();
                                 }}
                             >
+      
                                 <input
                                     type="text"
                                     name="commentText"
