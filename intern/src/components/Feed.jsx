@@ -11,6 +11,8 @@ const Feed = () => {
     const [posts, setPosts] = useState([]);
     const [showComments, setShowComments] = useState([]);
     const [mediaFile, setMediaFile] = useState(null);
+    const [likes, setlikes] = useState('');
+
 
     const handlePostChange = (event) => {
         setPostText(event.target.value);
@@ -49,7 +51,7 @@ const Feed = () => {
                 content: postText,
                 type: 'text',
                 likes: 0,
-                comments: [],
+                comments                                                    : [],
                 user: currentUser,
             };
         } else if (postType === 'image' || postType === 'video') {
@@ -94,12 +96,58 @@ const Feed = () => {
             console.error('Error posting to the API:', error);
         }
     };
-
-    const handleLike = (index) => {
-        const updatedPosts = [...posts];
-        updatedPosts[index].likes += 1;
-        setPosts(updatedPosts);
-    };
+    const handleLikeSum = (postId) => {
+        axios.get(`http://127.0.0.1:8000/api/likes/${postId}`, {
+          headers: {
+            // 'Content-Type': 'multipart/form-data', // You don't need this header for JSON data
+            "X-CSRF-TOKEN": document.head.querySelector(
+              'meta[name="csrf-token"]'
+            ).content,
+          },
+        })
+        .then((response) => {
+          // Assign the number to the post.likes property
+          setlikes(response.data);
+          console.log(likes); // Log the number of likes
+        })
+        .catch((error) => {
+          console.error(error); // Handle any errors
+        });
+      }
+      const handleLike = (postId) => {
+        console.log(postId);
+        console.log(userId);
+        axios
+          .post(
+            `http://127.0.0.1:8000/api/likes/`,
+            {
+              user_id: userId,
+              post_id: postId,
+            },
+            {
+              headers: {
+                "X-CSRF-TOKEN": document.head.querySelector(
+                  'meta[name="csrf-token"]'
+                ).content,
+              },
+            }
+          )
+          .then((response) => {
+            console.log(response.data); // Axios automatically parses the response data as JSON
+            // window.location.reload();
+          })
+          .catch((error) => {
+            console.error(error); // Axios handles errors better than fetch
+          });
+    
+          handleLikeSum(postId);
+          
+      }
+    // const handleLike = (index) => {
+    //     const updatedPosts = [...posts];
+    //     updatedPosts[index].likes += 1;
+    //     setPosts(updatedPosts);
+    // };
 
     const handleComment = (index, commentText) => {
         const currentUser = { name: 'ibrahim', picture: 'user_picture_url' };
@@ -282,8 +330,8 @@ const Feed = () => {
     )}
                 
                 <div className="feed__actions">
-    <button onClick={() => handleLike(index)}>
-        <i className="fas fa-thumbs-up"></i> {post.likes} Likes
+    <button onClick={() => handleLike(post.post_id)}>
+        <i className="fas fa-thumbs-up"></i> {likes} Likes
     </button>
 
     {userId == post.user_id ? (
