@@ -69,8 +69,9 @@ class PostController extends Controller
             }
             $post->update();
             return response()->json([
-                'message' => 'Post successfully created.'
-            ], 200);
+                // 'message' => 'Post successfully created.',
+                'post'=>$post
+            ], 201);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Something wrong!'
