@@ -12,7 +12,7 @@ const Profile = () => {
   const [imageFile, setImageFile] = useState(null);
   const [videoFile, setVideoFile] = useState(null);
   const [posts, setPosts] = useState([]);
-  const [likes, setlikes] = useState('');
+  const [likes, setLikes] = useState([]);
 
   const [user, setuserInfo] = useState([]);
   const [mediaFile, setMediaFile] = useState(null);
@@ -56,7 +56,7 @@ const Profile = () => {
       cover:  data.user[0].cover_image_url!=null ? 'http://127.0.0.1:8000/cover/'+data.user[0].cover_image_url : 'https://th.bing.com/th/id/OIF.rNoVjNQFVaRxTBmJadQMRA?rs=1&pid=ImgDetMain',
       bio: data.user[0].bio
     });
-    console.log(data.post);
+    // console.log(data.post);
   setPosts(data.post.map(request => ({
     id:request.post_id,
     content:request.content,
@@ -64,7 +64,10 @@ const Profile = () => {
     type:isImageOrVideo(request.media_url),
     created:formatDate(request.created_at),
     
-  })));//{handleLikeSum(post_id)}
+  })));
+  for (let post of data.post) {
+    handleLikeSum(post.post_id);
+  }
 
 });
 }, [])
@@ -175,16 +178,15 @@ const Profile = () => {
     })
     .then((response) => {
       // Assign the number to the post.likes property
-      setlikes(response.data);
-      console.log(likes); // Log the number of likes
+      // setlikes(response.data);
+      setLikes({...likes, [postId]: response.data});
     })
     .catch((error) => {
       console.error(error); // Handle any errors
     });
   }
   const handleLike = (postId) => {
-    console.log(postId);
-    console.log(userId);
+   
     axios
       .post(
         `http://127.0.0.1:8000/api/likes/`,
@@ -201,30 +203,15 @@ const Profile = () => {
         }
       )
       .then((response) => {
-        console.log(response.data); // Axios automatically parses the response data as JSON
-        // window.location.reload();
+        console.log(response.data); 
       })
       .catch((error) => {
-        console.error(error); // Axios handles errors better than fetch
+        console.error(error); 
       });
 
-      handleLikeSum(postId);
-      
+      handleLikeSum(postId);   
   };
-    
-  //   const updatedPosts = posts.map((post) => {
-  //     if (post.id === postId) {
-  //       return {
-  //         ...post,
-  //         likes: post.likes + 1,
-  //       };
-  //     }
-  //     return post;
-  //   });
-
-    // setPosts(updatedPosts);
-  // };
-
+  
   const handleEdit = (postId, content) => {
 
     fetch(`http://127.0.0.1:8000/api/posts/${postId}`, {
@@ -246,12 +233,6 @@ const Profile = () => {
         // Send a request to delete the post on the server
         await axios.delete(`http://localhost:8000/api/posts/${postId}`);
         
-        // Update the local state to reflect the deleted post
-        // const updatedPosts = posts.filter((_, i) => i !== index);
-        // setPosts(updatedPosts);
-        
-        // const updatedShowComments = showComments.filter((_, i) => i !== index);
-        // setShowComments(updatedShowComments);
     } catch (error) {
         console.error('Error deleting post:', error);
     }
@@ -364,7 +345,7 @@ const Profile = () => {
               <button className="bg-[#19715c] hover:bg-[#478298] text-[#d3efe9] px-2 py-1 rounded transition duration-300" onClick={() => handleLike(post.id)}>
                 Like
               </button>
-              <span className="text-[#19715c]" >{likes} Likes</span>
+              <span className="text-[#19715c]" >{likes[post.id]} Likes</span>
               <button className="bg-[#19715c] hover:bg-[#478298] text-[#d3efe9] px-2 py-1 rounded transition duration-300" onClick={() => handleEdit(post.id, post.content)}>
                 Edit
               </button>

@@ -11,7 +11,7 @@ const Feed = () => {
     const [posts, setPosts] = useState([]);
     const [showComments, setShowComments] = useState([]);
     const [mediaFile, setMediaFile] = useState(null);
-    const [likes, setlikes] = useState('');
+    const [likes, setLikes] = useState([]);
 
 
     const handlePostChange = (event) => {
@@ -41,39 +41,11 @@ const Feed = () => {
             return;
         }
 
-        const currentUser = { name: 'ibahim', picture: 'user_picture_url' };
-
-        let newPost;
-        if (postType === 'text') {
-            newPost = {
-                id: posts.length + 1,
-                user_id: userId,
-                content: postText,
-                type: 'text',
-                likes: 0,
-                comments                                                    : [],
-                user: currentUser,
-            };
-        } else if (postType === 'image' || postType === 'video') {
-            const mediaUrl = URL.createObjectURL(mediaFile);
-
-            newPost = {
-                id: posts.length + 1,
-                user_id: userId,
-                content: postText,
-                media_url: mediaUrl,
-                type: postType,
-                likes: 0,
-                comments: [],
-                user: currentUser,
-            };
-        }
-
         try {
             const formData = new FormData();
             formData.append('user_id', userId);
-            formData.append('content', newPost.content);
-            if (newPost.type !== 'text') {
+            formData.append('content', postText);
+            if (postType !== 'text') {
                 formData.append('media_url', mediaFile);
             }
 
@@ -85,38 +57,38 @@ const Feed = () => {
             });
 
             if (response.status === 201) {
-                setPosts([...posts, newPost]);
+                console.log(response);
+                setPosts([...posts, formData]);
 
                 setPostText('');
                 setPostType('text');
                 setMediaFile(null);
-                setShowComments([...showComments, false]);
+                // setShowComments([...showComments, false]);
             }
         } catch (error) {
             console.error('Error posting to the API:', error);
         }
     };
     const handleLikeSum = (postId) => {
-        axios.get(`http://127.0.0.1:8000/api/likes/${postId}`, {
-          headers: {
-            // 'Content-Type': 'multipart/form-data', // You don't need this header for JSON data
-            "X-CSRF-TOKEN": document.head.querySelector(
-              'meta[name="csrf-token"]'
-            ).content,
-          },
-        })
-        .then((response) => {
-          // Assign the number to the post.likes property
-          setlikes(response.data);
-          console.log(likes); // Log the number of likes
-        })
-        .catch((error) => {
-          console.error(error); // Handle any errors
-        });
-      }
+        axios
+          .get(`http://127.0.0.1:8000/api/likes/${postId}`, {
+            headers: {
+              "X-CSRF-TOKEN": document.head.querySelector(
+                'meta[name="csrf-token"]'
+              ).content,
+            },
+          })
+          .then((response) => {
+            // Use a function to update the likes state with the response data for the postId
+            setLikes((prevLikes) => ({...prevLikes, [postId]: response.data}));
+            // console.log(likes); // Log the updated likes object
+          })
+          .catch((error) => {
+            console.error(error); // Handle any errors
+          });
+      };
       const handleLike = (postId) => {
-        console.log(postId);
-        console.log(userId);
+        
         axios
           .post(
             `http://127.0.0.1:8000/api/likes/`,
@@ -166,18 +138,24 @@ const Feed = () => {
     const userId = sessionStorage.getItem('userId');
 
 
+    useEffect(() => {
+        // Loop over the posts array and call handleLikeSum for each post id
+        for (let post of posts) {
+          handleLikeSum(post.post_id);
+        }
+      }, [posts]); // Add posts as a dependency
 
     useEffect(() => {
         const fetchPosts = async () => {
             try {
                 let userId = sessionStorage.getItem('userId');
                 const response = await axios.get('http://localhost:8000/api/posts?id=' + userId);
-
+                
                 // Check if response.data.posts is defined and has a length property
                 if (response.data.posts && response.data.posts.length) {
                     setPosts(response.data.posts);
                     setShowComments(Array(response.data.posts.length).fill(false));
-                    console.log(userId);
+                   
                 } else {
                     console.error('Posts not found in API response');
                 }
@@ -311,7 +289,7 @@ const Feed = () => {
                     {posts.map((post, index) => (
   <div key={index} className="feed__post">
     <div className="feed__user-info">
-                                <img src={post.user.profile_image_url!=null ? 'http://127.0.0.1:8000/user/'+post.user.profile_image_url: 'https://pbs.twimg.com/profile_images/446867705560190977/esTJZMLH.png'} alt={post.user.name} />
+                                <img src={post.user?.profile_image_url!=null ? 'http://127.0.0.1:8000/user/'+post.user.profile_image_url: 'https://pbs.twimg.com/profile_images/446867705560190977/esTJZMLH.png'} alt={post.user.name} />
                                 <p>{post.user.name}</p>
                             </div>
       <div>
@@ -330,9 +308,9 @@ const Feed = () => {
     )}
                 
                 <div className="feed__actions">
-    <button onClick={() => handleLike(post.post_id)}>
-        <i className="fas fa-thumbs-up"></i> {likes} Likes
-    </button>
+    <div>
+        <i onClick={() => handleLike(post.post_id)} className="fas fa-thumbs-up"></i> {likes[post.post_id]} Likes
+    </div>
 
     {userId == post.user_id ? (
         <button onClick={() => handleDeletePost(post.post_id, index)}>
