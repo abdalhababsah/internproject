@@ -18,41 +18,29 @@ if (!name) {
 
     const handleSave = async (event) => {
       event.preventDefault();
-
       try {
         let formData = new FormData();
-        // formData.get('name',name)
-        // let mm=formData.append(userId, 'user_id');
         formData.append('name', name);
         formData.append('email', email);
         formData.append('password', password);
         if (profileImage != null) {
-          formData.append('profile_media_url', profileImage);
+          formData.append('img', profileImage);
         }
         formData.append('_method','PUT')
-        console.log(name);
-        console.log(userId);
-    console.log(formData);
+
         const response = await axios.post(`http://localhost:8000/api/users/${userId}`, formData,{
-        //   headers: {
-        //     'Content-Type': 'multipart/form-data',
-        //     'X-CSRF-TOKEN': document.head.querySelector('meta[name="csrf-token"]').content,
-  
-        // },
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            'X-CSRF-TOKEN': document.head.querySelector('meta[name="csrf-token"]').content,
+        },
         });
    
       } catch (error) {
         console.error('Error posting to the API:', error);
       }
 
-    onClose(); // Close modal after saving
+    onClose(); 
   };
-
-
-
-  // const handleBackgroundImageChange = (event) => {
-  //   setBackgroundImage(URL.createObjectURL(event.target.files[0]));
-  // };
 
   return (
     <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex justify-center items-center">
@@ -110,3 +98,9 @@ if (!name) {
 };
 
 export default EditProfileModal;
+
+
+
+  // const handleBackgroundImageChange = (event) => {
+  //   setBackgroundImage(URL.createObjectURL(event.target.files[0]));
+  // };

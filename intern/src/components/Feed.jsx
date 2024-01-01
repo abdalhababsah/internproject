@@ -1,6 +1,6 @@
+import img from "../images/feed-2.jpg";
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import img from "../images/feed-2.jpg";
 import Header from './Header';
 import Sidebar from './Sidebar';
 import FriendRequests from './FriendRequests';
@@ -79,12 +79,10 @@ const Feed = () => {
             },
           })
           .then((response) => {
-            // Use a function to update the likes state with the response data for the postId
             setLikes((prevLikes) => ({...prevLikes, [postId]: response.data}));
-            // console.log(likes); // Log the updated likes object
           })
           .catch((error) => {
-            console.error(error); // Handle any errors
+            console.error(error);
           });
       };
       const handleLike = (postId) => {
@@ -111,39 +109,17 @@ const Feed = () => {
           .catch((error) => {
             console.error(error); // Axios handles errors better than fetch
           });
-    
-          handleLikeSum(postId);
-          
+          handleLikeSum(postId);    
       }
-    // const handleLike = (index) => {
-    //     const updatedPosts = [...posts];
-    //     updatedPosts[index].likes += 1;
-    //     setPosts(updatedPosts);
-    // };
-
-    const handleComment = (index, commentText) => {
-        const currentUser = { name: 'ibrahim', picture: 'user_picture_url' };
-        const updatedPosts = [...posts];
-        updatedPosts[index].comments.push({ text: commentText, user: currentUser });
-        setPosts(updatedPosts);
-    };
-
-    const toggleComments = (index) => {
-        const updatedShowComments = [...showComments];
-        updatedShowComments[index] = !updatedShowComments[index];
-        setShowComments(updatedShowComments);
-    };
-
 
     const userId = sessionStorage.getItem('userId');
 
 
     useEffect(() => {
-        // Loop over the posts array and call handleLikeSum for each post id
         for (let post of posts) {
           handleLikeSum(post.post_id);
         }
-      }, [posts]); // Add posts as a dependency
+      }, [posts]); 
 
     useEffect(() => {
         const fetchPosts = async () => {
@@ -200,10 +176,8 @@ const Feed = () => {
         try {
             const formData = new FormData();
             formData.append('user_id', userId);
-            formData.append('post_id', postId);  // Include the post_id field
-            formData.append('reason', reason);
-    console.log(postId);
-    
+            formData.append('post_id', postId);
+            formData.append('reason', reason);    
             const response = await axios.post(
                 'http://localhost:8000/api/reports',
                 formData,
@@ -216,7 +190,8 @@ const Feed = () => {
             );
     
             if (response.status === 201) {
-                console.log('Post reported successfully:', response.data);
+                alert('Post reported successfully')
+                // console.log( response.data);
                 // Handle the response data as needed
             } else {
                 console.error('Failed to report post. Status:', response.status);
@@ -289,8 +264,8 @@ const Feed = () => {
                     {posts.map((post, index) => (
   <div key={index} className="feed__post">
     <div className="feed__user-info">
-                                <img src={post.user?.profile_image_url!=null ? 'http://127.0.0.1:8000/user/'+post.user.profile_image_url: 'https://pbs.twimg.com/profile_images/446867705560190977/esTJZMLH.png'} alt={post.user.name} />
-                                <p>{post.user.name}</p>
+                                <img src={post.user?.profile_image_url!=null ? 'http://127.0.0.1:8000/user/'+post.user.profile_image_url: 'https://pbs.twimg.com/profile_images/446867705560190977/esTJZMLH.png'} alt={post.user?.name} />
+                                <p>{post.user?.name}</p>
                             </div>
       <div>
         <p>{post.content}</p>
@@ -323,8 +298,34 @@ const Feed = () => {
 
     )}
 </div>                  
-                
-  
+
+</div>
+    ))}
+</div>
+<FriendRequests />
+</div>
+</div>
+    </>
+);
+
+};
+
+export default Feed;
+
+    // const handleComment = (index, commentText) => {
+    //     const currentUser = { name: 'ibrahim', picture: 'user_picture_url' };
+    //     const updatedPosts = [...posts];
+    //     updatedPosts[index].comments.push({ text: commentText, user: currentUser });
+    //     setPosts(updatedPosts);
+    // };
+
+    // const toggleComments = (index) => {
+    //     const updatedShowComments = [...showComments];
+    //     updatedShowComments[index] = !updatedShowComments[index];
+    //     setShowComments(updatedShowComments);
+    // };
+
+ 
 
 
                                 {/* {showComments[index] && (
@@ -340,33 +341,22 @@ const Feed = () => {
                                         ))}
                                     </div>
                                 )} */}
-
-                            <form
-                                className="comment-form"
-                                onSubmit={(e) => {
-                                    e.preventDefault();
-                                    const commentText = e.target.elements.commentText.value;
-                                    handleComment(index, commentText);
-                                    e.target.reset();
-                                }}
-                            >
+                
+ 
+                            // <form
+                            //     className="comment-form"
+                            //     onSubmit={(e) => {
+                            //         e.preventDefault();
+                            //         const commentText = e.target.elements.commentText.value;
+                            //         handleComment(index, commentText);
+                            //         e.target.reset();
+                            //     }}
+                            // >
       
-                                <input
-                                    type="text"
-                                    name="commentText"
-                                    placeholder="Add a comment"
-                                />
-                                <button type="submit">Comment</button>
-                            </form>
-                        </div>
-                    ))}
-                </div>
-                <FriendRequests />
-            </div>
-        </div>
-    </>
-);
-
-};
-
-export default Feed;
+                            //     <input
+                            //         type="text"
+                            //         name="commentText"
+                            //         placeholder="Add a comment"
+                            //     />
+                            //     <button type="submit">Comment</button>
+                            // </form>

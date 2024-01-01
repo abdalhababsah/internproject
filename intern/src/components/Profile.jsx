@@ -48,15 +48,12 @@ const Profile = () => {
   fetch('http://127.0.0.1:8000/api/users/'+userId)
   .then(response => response.json())
   .then(data => {
-    // console.log(data.user[0]);https://cobaltsettlements.com/wp-content/uploads/2019/03/blank-profile.jpg
     setuserInfo({
-      // id: request.user_id,
       name: data.user[0].name,
       picture: data.user[0].profile_image_url!=null ? 'http://127.0.0.1:8000/user/'+data.user[0].profile_image_url : 'https://pbs.twimg.com/profile_images/446867705560190977/esTJZMLH.png',
       cover:  data.user[0].cover_image_url!=null ? 'http://127.0.0.1:8000/cover/'+data.user[0].cover_image_url : 'https://th.bing.com/th/id/OIF.rNoVjNQFVaRxTBmJadQMRA?rs=1&pid=ImgDetMain',
       bio: data.user[0].bio
     });
-    // console.log(data.post);
   setPosts(data.post.map(request => ({
     id:request.post_id,
     content:request.content,
@@ -85,15 +82,7 @@ const Profile = () => {
   const handlePostTypeChange = (event) => {
     setPostType(event.target.value);
   };
-
-  const handleImageChange = (event) => {
-    setImageFile(event.target.files[0]);
-  };
-
-  const handleVideoChange = (event) => {
-    setVideoFile(event.target.files[0]);
-  };
-  
+ 
   const handleMediaChange = (event) => {
     const file = event.target.files[0];
     setMediaFile(file);
@@ -143,34 +132,11 @@ const Profile = () => {
       console.error('Error posting to the API:', error);
     }
 
-    // if ((postType === 'text' && postText.trim() !== '') || imageFile || videoFile) {
-    //   const currentUser = { name: 'ibrahim', picture: img };
-    //   let content;
-
-    //   if (postType === 'text') {
-    //     content = postText;
-    //   } else if (postType === 'image') {
-    //     content = URL.createObjectURL(imageFile);
-    //   } else if (postType === 'video') {
-    //     content = URL.createObjectURL(videoFile);
-    //   }
-
-      // setPosts([
-      //   ...posts,
-      //   { id: posts.length + 1, content, type: postType, user: currentUser, likes: 0, comments: [] },
-      // ]);
-
-      // setPostText('');
-      // setImageFile(null);
-      // setVideoFile(null);
-      // setPostType('text');
-    // }
   };
   const handleLikeSum = (postId) => {
     axios
     .get(`http://127.0.0.1:8000/api/likes/${postId}`, {
       headers: {
-        // 'Content-Type': 'multipart/form-data', // You don't need this header for JSON data
         "X-CSRF-TOKEN": document.head.querySelector(
           'meta[name="csrf-token"]'
         ).content,
@@ -202,9 +168,9 @@ const Profile = () => {
           },
         }
       )
-      .then((response) => {
-        console.log(response.data); 
-      })
+      // .then((response) => {
+      //   console.log(response.data); 
+      // })
       .catch((error) => {
         console.error(error); 
       });

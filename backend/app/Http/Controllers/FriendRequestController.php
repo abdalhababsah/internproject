@@ -113,11 +113,17 @@ return response()->json(['pendingRequests' => $pendingRequests]);
             $query->where('sender_id', $userId)
                 ->orWhere('receiver_id', $userId);
         })
-        ->pluck('sender_id', 'receiver_id')
+        ->select('sender_id', 'receiver_id')
+        ->get()
+        ->map(function ($friend) {
+            return [$friend->sender_id, $friend->receiver_id];
+        })
+        ->flatten()
+        ->unique()
         ->toArray();
     
         $users = User::where('user_id', '!=', $userId)
-        ->whereNotIn('user_id', array_keys($friends))
+        ->whereNotIn('user_id',$friends)
         ->get(['user_id', 'name', 'profile_image_url as img']);
     
     return response()->json(['users' => $users]);
