@@ -13,6 +13,24 @@ const Feed = () => {
     const [mediaFile, setMediaFile] = useState(null);
     const [likes, setLikes] = useState([]);
 
+    
+  function isImageOrVideo(fileName) {
+    // Get the file extension
+    if (fileName){
+    const extension = fileName.split('.').pop().toLowerCase();
+  
+    // Check if the file is an image
+    if (['jpg', 'png', 'gif', 'bmp'].includes(extension)) {
+      return 'image';
+    }
+    // Check if the file is a video
+    else if (['mp4', 'avi', 'mov', 'wmv'].includes(extension)) {
+      return 'video';
+    }}
+    else {
+      return 'unknown';
+    }
+  }
 
     const handlePostChange = (event) => {
         setPostText(event.target.value);
@@ -270,12 +288,12 @@ const Feed = () => {
       <div>
         <p>{post.content}</p>
       </div>
-      {post.type !== 'text' && post.media_url && (
+      { post.media_url && isImageOrVideo(post.media_url)=='image' &&(
     <div>
         <img src={`http://localhost:8000/posts/${post.media_url}`} alt="Post" />
     </div>
 )}
-    {post.type === 'video' && (
+    {isImageOrVideo(post.media_url) === 'video' && (
       <video width="100%" height="auto" controls>
         <source src={`${post.media_url}`} type="video/mp4" />
         Your browser does not support the video tag.
