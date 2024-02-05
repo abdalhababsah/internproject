@@ -12,6 +12,7 @@ import PlayerTable from './components/Dashboard/PlayerTable';
 import Register from './components/Register';
 import Admin from './pages/admin.jsx';
 import Addfriend from './components/Addfriend.jsx';
+import PusherFunction from './components/PusherFunction.jsx';
 const App = () => {
   return (
     <BrowserRouter>
@@ -22,6 +23,7 @@ const App = () => {
       <Route path='/dashboard' element={<PlayerTable/>}/>
       <Route path='/register' element={<Register/>}/>
       <Route path="/admin" element={<Admin/>} />
+      <Route path="/chat" element={<PusherFunction/>} />
       <Route path="/addfriends" element={<Addfriend/>}/>
     </Routes>
     </BrowserRouter>

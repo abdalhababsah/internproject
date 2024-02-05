@@ -6,6 +6,7 @@ use App\Models\Post;
 use App\Models\Analytic;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 use File;
 class PostController extends Controller
@@ -15,19 +16,24 @@ class PostController extends Controller
     {
 
         try {
-        // if ($request->has("id")) {
+      
         $id = $request->id; // Get user ID from request, or default to current user
-        $user=User::find($id);
-        $friendsId1 = $user->friends->pluck('user_id'); // Assuming you have a friends method
-        $friendsId2 = $user->friend2->pluck('user_id'); // Assuming you have a friends method
-        $posts = Post::with('user:user_id,name,profile_image_url')
-             ->whereIn('posts.user_id', $friendsId1->merge($friendsId2)->prepend($id))
-             ->orderBy('created_at','desc')
-             ->get();
+        $friends = User::find($id)->getFriends()->pluck('user_id');
 
-        // }else {
-        //     $posts = Post::with('user:user_id,name,profile_image_url')->get();}
-
+        $posts =// Cache::remember("posts.user_id.$id", -1, function () use ($id, $friends) {
+            //return
+             Post:://with('user:user_id,name,profile_image_url')
+                // ->withCount('likes')
+                whereIn('posts.user_id', $friends->prepend($id))
+                ->orderBy('created_at','desc')
+                ->get();
+        //});
+        // $posts = Post::with('user:user_id,name,profile_image_url',)
+        //      ->whereIn('posts.user_id', $friends->prepend($id))
+        //      ->withCount('likes')
+        //      ->orderBy('created_at','desc')
+        //      ->get();
+             
 
         return response()->json([
             'posts' => $posts

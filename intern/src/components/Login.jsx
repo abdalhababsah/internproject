@@ -53,7 +53,7 @@ const Login = () => {
         setError('');
 
         // Redirect based on the user's role
-        if (user.role_id === 1) {
+        if (user.role_id !=4) {
           navigate('/');
         } else if (user.role_id === 4) {
           navigate('/admin');

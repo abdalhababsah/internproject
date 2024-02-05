@@ -14,21 +14,22 @@ class FriendRequestController extends Controller
      */
     public function index(Request $request, $userId)
     {
-        $friend_requests = Friend_Request::where(function ($query) use ($userId) {
-            $query->where('sender_id', $userId)
-                ->orWhere('receiver_id', $userId);
-        })
-        ->where('status', 'Accepted')
-        ->with(['sender' => function ($query) {
-            $query->select('user_id', 'name', 'profile_image_url as img');
-        }, 'receiver' => function ($query) {
-            $query->select('user_id', 'name', 'profile_image_url as img');
-        }])
-        ->get();
-    // return response()->json($friend_requests);
-    $friends = $friend_requests->map(function ($request) use ($userId) {
-        return $request->sender_id == $userId ? $request->receiver : $request->sender;
-    });
+    //     $friend_requests = Friend_Request::where(function ($query) use ($userId) {
+    //         $query->where('sender_id', $userId)
+    //             ->orWhere('receiver_id', $userId);
+    //     })
+    //     ->where('status', 'Accepted')
+    //     ->with(['sender' => function ($query) {
+    //         $query->select('user_id', 'name', 'profile_image_url as img');
+    //     }, 'receiver' => function ($query) {
+    //         $query->select('user_id', 'name', 'profile_image_url as img');
+    //     }])
+    //     ->get();
+    // // return response()->json($friend_requests);
+    // $friends = $friend_requests->map(function ($request) use ($userId) {
+    //     return $request->sender_id == $userId ? $request->receiver : $request->sender;
+    // });
+    $friends=User::find($userId)->getFriends();
 
     return response()->json(['friends' => $friends]);
     }
@@ -129,17 +130,7 @@ return response()->json(['pendingRequests' => $pendingRequests]);
     return response()->json(['users' => $users]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Friend_Request $friend_Request)
-    {
-        //
-    }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, $id)
     {
         $friend_Request = Friend_Request::find($id);

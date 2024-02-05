@@ -1,16 +1,16 @@
 // Profile.jsx#19715c19715c
 import React, { useState ,useEffect} from 'react';
 import axios from 'axios';
-import img from '../images/feed-2.jpg';
+import img from '../images/feed-8.jpg';
 import Sidebar from './Sidebar';
 import Header from './Header';
 import FriendRequests from './FriendRequests';
 import EditProfileModal from './EditProfileModal';
+
 const Profile = () => {
+
   const [postText, setPostText] = useState('');
   const [postType, setPostType] = useState('text');
-  const [imageFile, setImageFile] = useState(null);
-  const [videoFile, setVideoFile] = useState(null);
   const [posts, setPosts] = useState([]);
   const [likes, setLikes] = useState([]);
 
@@ -51,7 +51,7 @@ const Profile = () => {
     setuserInfo({
       name: data.user[0].name,
       picture: data.user[0].profile_image_url!=null ? 'http://127.0.0.1:8000/user/'+data.user[0].profile_image_url : 'https://pbs.twimg.com/profile_images/446867705560190977/esTJZMLH.png',
-      cover:  data.user[0].cover_image_url!=null ? 'http://127.0.0.1:8000/cover/'+data.user[0].cover_image_url : 'https://th.bing.com/th/id/OIF.rNoVjNQFVaRxTBmJadQMRA?rs=1&pid=ImgDetMain',
+      cover:  data.user[0].cover_image_url!=null ? 'http://127.0.0.1:8000/cover/'+data.user[0].cover_image_url : img,
       bio: data.user[0].bio
     });
   setPosts(data.post.map(request => ({
@@ -168,9 +168,6 @@ const Profile = () => {
           },
         }
       )
-      // .then((response) => {
-      //   console.log(response.data); 
-      // })
       .catch((error) => {
         console.error(error); 
       });
@@ -209,21 +206,21 @@ const Profile = () => {
   // const handleDelete = (postId) => {
   // };
 
-  const handleCommentSubmit = (postId, commentText) => {
-    const currentUser = { name: 'ibrahim', picture: img };
+  // const handleCommentSubmit = (postId, commentText) => {
+  //   const currentUser = { name: 'ibrahim', picture: img };
 
-    const updatedPosts = posts.map((post) => {
-      if (post.id === postId) {
-        return {
-          ...post,
-          comments: [...post.comments, { text: commentText, user: currentUser }],
-        };
-      }
-      return post;
-    });
+  //   const updatedPosts = posts.map((post) => {
+  //     if (post.id === postId) {
+  //       return {
+  //         ...post,
+  //         comments: [...post.comments, { text: commentText, user: currentUser }],
+  //       };
+  //     }
+  //     return post;
+  //   });
 
-    setPosts(updatedPosts);
-  };
+  //   setPosts(updatedPosts);
+  // };
 
   return (
     <>

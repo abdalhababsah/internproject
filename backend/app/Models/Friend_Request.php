@@ -26,4 +26,6 @@ class Friend_Request extends Model
     {
         return $this->belongsTo(User::class, 'receiver_id');
     }
+    // public function friend(){}
+    
 }

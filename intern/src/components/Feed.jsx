@@ -9,9 +9,9 @@ const Feed = () => {
     const [postText, setPostText] = useState('');
     const [postType, setPostType] = useState('text');
     const [posts, setPosts] = useState([]);
+    const [likes, setLikes] = useState([]);
     const [showComments, setShowComments] = useState([]);
     const [mediaFile, setMediaFile] = useState(null);
-    const [likes, setLikes] = useState([]);
 
     
   function isImageOrVideo(fileName) {
@@ -76,7 +76,8 @@ const Feed = () => {
 
             if (response.status === 201) {
                 console.log(response);
-                setPosts([...posts, formData]);
+                setPosts([...posts, response.data.post]);
+                console.log(posts);
 
                 setPostText('');
                 setPostType('text');
@@ -87,6 +88,22 @@ const Feed = () => {
             console.error('Error posting to the API:', error);
         }
     };
+    // const handleLikeSum = (postId) => {
+    //     axios
+    //       .get(`http://127.0.0.1:8000/api/likes/${postId}`, {
+    //         headers: {
+    //           "X-CSRF-TOKEN": document.head.querySelector(
+    //             'meta[name="csrf-token"]'
+    //           ).content,
+    //         },
+    //       })
+    //       .then((response) => {
+    //         setLikes((prevLikes) => ({...prevLikes, [postId]: response.data}));
+    //       })
+    //       .catch((error) => {
+    //         console.error(error);
+    //       });
+    //   };
     const handleLikeSum = (postId) => {
         axios
           .get(`http://127.0.0.1:8000/api/likes/${postId}`, {
@@ -97,12 +114,25 @@ const Feed = () => {
             },
           })
           .then((response) => {
-            setLikes((prevLikes) => ({...prevLikes, [postId]: response.data}));
+            setPosts((prevPosts) => {
+              // Find the index of the post with the given postId
+              const index = prevPosts.findIndex((post) => post.post_id === postId);
+              // Make a copy of the posts array
+              const newPosts = [...prevPosts];
+              // Update the likes_count of the post at the index
+              newPosts[index] = {
+                ...newPosts[index],
+                likes_count: response.data
+              };
+              // Return the new posts array
+              return newPosts;
+            });
           })
           .catch((error) => {
             console.error(error);
           });
       };
+      
       const handleLike = (postId) => {
         
         axios
@@ -133,13 +163,15 @@ const Feed = () => {
     const userId = sessionStorage.getItem('userId');
 
 
-    useEffect(() => {
-        for (let post of posts) {
-          handleLikeSum(post.post_id);
-        }
-      }, [posts]); 
+    // useEffect(() => {
+    //     for (let post of posts) {
+    //       handleLikeSum(post.post_id);
+    //     }
+    //   }, [posts]); 
 
     useEffect(() => {
+        let intervalId;
+
         const fetchPosts = async () => {
             try {
                 let userId = sessionStorage.getItem('userId');
@@ -149,7 +181,7 @@ const Feed = () => {
                 if (response.data.posts && response.data.posts.length) {
                     setPosts(response.data.posts);
                     setShowComments(Array(response.data.posts.length).fill(false));
-                   
+                   console.log(response.data);
                 } else {
                     console.error('Posts not found in API response');
                 }
@@ -159,7 +191,12 @@ const Feed = () => {
         };
 
         fetchPosts();
-    }, [userId]);
+         // Set an interval to call the fetchPosts function every 5 seconds
+  intervalId = setInterval(fetchPosts, 5000);
+
+  // Return a cleanup function to clear the interval
+  return () => clearInterval(intervalId);
+    }, []);
 
     const handleDeletePost = async (postId, index) => {
         try {
@@ -167,11 +204,11 @@ const Feed = () => {
             await axios.delete(`http://localhost:8000/api/posts/${postId}`);
 
             // Update the local state to reflect the deleted post
-            const updatedPosts = posts.filter((_, i) => i !== index);
+            const updatedPosts = posts.filter((post) => post.post_id !== postId);
             setPosts(updatedPosts);
 
-            const updatedShowComments = showComments.filter((_, i) => i !== index);
-            setShowComments(updatedShowComments);
+            // const updatedShowComments = showComments.filter((_, i) => posts[i].post_id !== postId);
+            // setShowComments(updatedShowComments);
         } catch (error) {
             console.error('Error deleting post:', error);
         }
@@ -279,12 +316,12 @@ const Feed = () => {
           
           
             </button></div>               </div>
-                    {posts.map((post, index) => (
-  <div key={index} className="feed__post">
+        {posts.map((post, index) => (
+  <div key={post.post_id} className="feed__post">
     <div className="feed__user-info">
-                                <img src={post.user?.profile_image_url!=null ? 'http://127.0.0.1:8000/user/'+post.user.profile_image_url: 'https://pbs.twimg.com/profile_images/446867705560190977/esTJZMLH.png'} alt={post.user?.name} />
-                                <p>{post.user?.name}</p>
-                            </div>
+            <img src={post.user?.profile_image_url!=null ? 'http://127.0.0.1:8000/user/'+post.user.profile_image_url: 'https://pbs.twimg.com/profile_images/446867705560190977/esTJZMLH.png'} alt={post.user?.name} />
+            <p>{post.user?.name}</p>
+        </div>
       <div>
         <p>{post.content}</p>
       </div>
@@ -300,13 +337,13 @@ const Feed = () => {
       </video>
     )}
                 
-                <div className="feed__actions">
+    <div className="feed__actions">
     <div>
-        <i onClick={() => handleLike(post.post_id)} className="fas fa-thumbs-up"></i> {likes[post.post_id]} Likes
+        <i onClick={() => handleLike(post.post_id)} className="fas fa-thumbs-up"></i> {post.likes_count} Likes
     </div>
 
     {userId == post.user_id ? (
-        <button onClick={() => handleDeletePost(post.post_id, index)}>
+        <button onClick={() => handleDeletePost(post.post_id)}>
             <i className="fas fa-trash"></i> Delete
         </button>
     ) : (

@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\ChatController;
 use App\Http\Controllers\LikeController;
+use App\Http\Controllers\ProfileController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
@@ -47,19 +49,19 @@ Route::put('analytics/{post_id}/update-likes-comments', [AnalyticController::cla
 
 //posts Routes
 // {{
-//Route to get all users
-Route::get('/posts', [PostController::class, 'index']);
+    //Route to get all users
+    Route::get('/posts', [PostController::class, 'index']);
+    
+    // Route for creating a new post
+    Route::post('/posts', [PostController::class, 'store']);
 
-// Route for creating a new post
-Route::post('/posts', [PostController::class, 'store']);
-
-// Route for getting a specific post
-Route::get('/posts/{post}', [PostController::class, 'show']);
-
-// Route for updating a specific post
-Route::put('/posts/{post}', [PostController::class, 'update']);
-
-// Route for deleting a specific post
+    // Route for getting a specific post
+    Route::get('/posts/{post}', [PostController::class, 'show']);
+    
+    // Route for updating a specific post
+    Route::put('/posts/{post}', [PostController::class, 'update']);
+    
+    // Route for deleting a specific post
 Route::delete('/posts/{post}', [PostController::class, 'destroy'])->name('posts.destroy');
 //  }}
 
@@ -78,3 +80,9 @@ Route::resource('likes', LikeController::class);
 //----- Report --------/
 
 Route::apiResource('reports', ReportController::class);
+
+Route::resource('profile', ProfileController::class);
+
+Route::get('/chat',[ChatController::class,'index']);
+Route::post('/broadcast',[ChatController::class,'broadcast']);
+Route::get('/receive',[ChatController::class,'receive']);

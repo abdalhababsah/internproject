@@ -94,16 +94,16 @@ class User extends Authenticatable
     {
         return $this->hasMany(Report::class, 'reported_by_id');
     }
-    public function friends()
-    {
-        // Assuming the FriendRequest model has 'sender_id' and 'receiver_id' and a 'status' field
-        return $this->belongsToMany(User::class, 'friend_requests', 'sender_id', 'receiver_id')->wherePivot('status', 'Accepted');
+    // public function friends()
+    // {
+    //     // Assuming the FriendRequest model has 'sender_id' and 'receiver_id' and a 'status' field
+    //     return $this->belongsToMany(User::class, 'friend_requests', 'sender_id', 'receiver_id')->wherePivot('status', 'Accepted');
                         
-    }
-    public function friend2(){
-        return $this->belongsToMany(User::class, 'friend_requests', 'receiver_id', 'sender_id')
-                                   ->wherePivot('status', 'Accepted');
-    }
+    // }
+    // public function friend2(){
+    //     return $this->belongsToMany(User::class, 'friend_requests', 'receiver_id', 'sender_id')
+    //                                ->wherePivot('status', 'Accepted');
+    // }
     // public function friends()
     // {
     //     // Assuming the FriendRequest model has 'sender_id' and 'receiver_id' and a 'status' field
@@ -112,4 +112,23 @@ class User extends Authenticatable
     //     $all_friends = $sender_friends->merge($receiver_friends);
     //     return $all_friends;
     // }
+    public function getFriends()
+{
+    $userId = $this->user_id; // get the user id from the model instance
+    $friend_requests = Friend_Request::where(function ($query) use ($userId) {
+        $query->where('sender_id', $userId)
+            ->orWhere('receiver_id', $userId);
+    })
+    ->where('status', 'Accepted')
+    ->with('sender:user_id,name,profile_image_url as img',
+     'receiver:user_id,name,profile_image_url as img')
+    ->get();
+
+    $friends = $friend_requests->map(function ($request) use ($userId) {
+        return $request->sender_id == $userId ? $request->receiver : $request->sender;
+    });
+
+    return $friends;
+}
+
 }

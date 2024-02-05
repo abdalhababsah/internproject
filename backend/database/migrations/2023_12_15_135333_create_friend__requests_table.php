@@ -19,8 +19,6 @@ class CreateFriendRequestsTable extends Migration
                     ->references('user_id')
                     ->on('users')
                     ->onDelete('cascade');
-            // $table->unsignedBigInteger('')->constrained('users')->onDelete('cascade');
-            // $table->unsignedBigInteger('')->constrained('users')->onDelete('cascade');
             $table->enum('status', ['Pending', 'Accepted', 'Rejected'])->default('Pending');
             $table->timestamps();
         });
