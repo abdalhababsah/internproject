@@ -13,7 +13,11 @@ class ChatController extends Controller
     }
     public function broadcast(Request $request)
     {
-        broadcast(new ChatBroadcast ($request->message))->toOthers();
+        broadcast(new ChatBroadcast ([
+            $request->sender,
+            $request->reciver,
+            $request->message
+            ]))->toOthers();
         
         return response()->json(['message'=>$request->message]);
     }
