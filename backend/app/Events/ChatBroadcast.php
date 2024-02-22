@@ -14,27 +14,21 @@ class ChatBroadcast implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    /**
-     * Create a new event instance.
-     */
     public $message;
-    public function __construct($message)
+    public $reciver;
+    public $sender;
+    public function __construct($message,$reciver,$sender)
     {
         $this->message=$message;
+        $this->reciver=$reciver;
+        $this->sender=$sender;
     }
 
-    /**
-     * Get the channels the event should broadcast on.
-     *
-     * @return array<int, \Illuminate\Broadcasting\Channel>
-     */
-    // public function broadcastOn(): array
-    // {
-    //     return ['public'];
-    // }
+
     public function broadcastOn()
   {
-      return ['my-channel'];
+    //   return ['my-channel'];
+    return new PrivateChannel('chat.' . $this->reciver);
   }
 
   public function broadcastAs()
